@@ -5,10 +5,8 @@ import numpy as np
 
 
 def experiment_model(model_type):
-    # batch_sizes = [32, 64, 128]
-    # num_epochs_list = [100, 300, 500, 700, 1000, 1300]
-    batch_sizes = [32, 64]
-    num_epochs_list = [1, 3, 5]
+    batch_sizes = [32, 64, 128]
+    num_epochs_list = [100, 300, 500, 700, 1000, 1300]
     dataset = Dataset()
     result = {}
     for batch_size in batch_sizes:
