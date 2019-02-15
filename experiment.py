@@ -7,6 +7,9 @@ import numpy as np
 def experiment_model(model_type):
     batch_sizes = [32, 64, 128]
     num_epochs_list = [100, 300, 500, 700, 1000, 1300]
+    # TODO change after test
+    batch_sizes = [32]
+    num_epochs_list = [10]
     dataset = Dataset()
     result = {}
     for batch_size in batch_sizes:
@@ -18,6 +21,7 @@ def experiment_model(model_type):
                 execution = Execution(model, data, batch_size, num_epochs)
                 execution.run()
                 evals.append(execution.evaluate())
+                break  # TODO remove after test
             result[batch_size, num_epochs] = merge_results(evals)
     return result
 
