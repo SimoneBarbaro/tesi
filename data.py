@@ -1,4 +1,4 @@
-from pathlib import Path
+import os
 import scipy.io
 from scipy import ndimage
 import numpy as np
@@ -11,7 +11,7 @@ class Dataset:
         self.input_shape = (self.images_width, self.images_width, 3)
         mat = scipy.io.loadmat('EILAT_data.mat')
         data = mat["data"]
-        self.directory = data[0, 0][0]
+        self.directory = os.path.join(data[0, 0][0][0][0], data[0, 0][0][1][0])
         self.labels = data[0, 1][0]
         self.num_classes = len(self.labels)
         for i in range(0, self.num_classes):
@@ -20,11 +20,11 @@ class Dataset:
         self.dim1 = data[0, 3][0][0]
         self.dim2 = data[0, 4][0][0]
         img_paths = data[0, 5][0]
+        img_names = data[0, 6][0]
         self.imgs = []
-        for img_path in img_paths:
-            file_path = img_path[0]
-            path = Path(file_path)
-            image = ndimage.imread(path, mode="RGB")
+        for i, img_path in enumerate(img_paths):
+            file_path = os.path.join(self.directory, img_path[0], img_names[i][0])
+            image = ndimage.imread(file_path, mode="RGB")
             self.imgs.append(image)
 
     def get_data(self, fold, width=None):
