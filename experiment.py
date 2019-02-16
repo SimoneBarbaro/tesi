@@ -10,8 +10,9 @@ class ExperimentState:
     def __init__(self, state_numer=0):
         self.__batch_size_index = int(state_numer / len(self.batch_sizes))
         self.__num_epochs_index = state_numer % len(self.num_epochs_list)
-        self.batch_size = self.batch_sizes[self.__batch_size_index]
-        self.num_epochs = self.num_epochs_list[self.__num_epochs_index]
+        if self.is_valid_state():
+            self.batch_size = self.batch_sizes[self.__batch_size_index]
+            self.num_epochs = self.num_epochs_list[self.__num_epochs_index]
 
     def is_valid_state(self):
         return self.__batch_size_index < len(self.batch_sizes) and self.__num_epochs_index < len(self.num_epochs_list)
