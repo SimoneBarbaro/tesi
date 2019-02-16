@@ -1,6 +1,6 @@
 from tensorflow import keras
 
-from enum import Enum, auto
+from enum import Enum
 
 
 def inception_v3_sub_model(input_shape):
@@ -22,9 +22,9 @@ def densenet121_sub_model(input_shape):
 
 
 class ModelType(Enum):
-    INCEPTION_V3 = auto()
-    RES_NET_50 = auto()
-    DENSE_NET_121 = auto()
+    INCEPTION_V3 = 0
+    RES_NET_50 = 1
+    DENSE_NET_121 = 2
 
     def get_model_builder(self):
         if self == ModelType.INCEPTION_V3:
