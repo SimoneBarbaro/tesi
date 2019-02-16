@@ -38,6 +38,7 @@ class Experiment:
                                    str(state.num_epochs) + " " +
                                    str(merge_results(evals)) + "\n")
             self.state_number += 1
+            state = ExperimentState(self.state_number)
 
 
 def merge_results(results):
