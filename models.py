@@ -1,6 +1,6 @@
 from tensorflow import keras
 
-from enum import Enum
+from enum import Enum, auto
 
 
 def inception_v3_sub_model(input_shape):
@@ -22,9 +22,23 @@ def densenet121_sub_model(input_shape):
 
 
 class ModelType(Enum):
-    INCEPTION_V3 = inception_v3_sub_model
-    RES_NET_50 = resnet50_sub_model
-    DENSE_NET_121 = densenet121_sub_model
+    INCEPTION_V3 = auto()
+    RES_NET_50 = auto()
+    DENSE_NET_121 = auto()
+
+    def get_model_builder(self):
+        if self == ModelType.INCEPTION_V3:
+            return inception_v3_sub_model
+        elif self == ModelType.RES_NET_50:
+            return resnet50_sub_model
+        elif self == ModelType.DENSE_NET_121:
+            return densenet121_sub_model
+
+    def get_min_input_width(self):
+        if self == ModelType.INCEPTION_V3:
+            return 75
+        else:
+            return 32
 
 # miss one dense net and resnet
 
@@ -53,7 +67,7 @@ def compile_model(model, metrics):
 
 def get_model(data, model_type):
     if model_type is not None:
-        model = complete_model(model_type(data.input_shape),
+        model = complete_model(model_type.get_model_builder()(data.input_shape),
                                data.input_shape, data.num_classes)
         compile_model(model, ['accuracy'])
         return model

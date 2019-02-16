@@ -27,9 +27,9 @@ class Dataset:
             image = ndimage.imread(file_path, mode="RGB")
             self.imgs.append(image)
 
-    def get_data(self, fold, width=None):
-        if width is not None and width != self.images_width:
-            return PaddedData(self, fold, width)
+    def get_data(self, fold, min_width=None):
+        if min_width is not None and min_width > self.images_width:
+            return PaddedData(self, fold, min_width)
         return Data(self, fold)
 
 
