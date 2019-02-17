@@ -8,7 +8,7 @@ class ExperimentState:
     num_epochs_list = [100, 300, 500, 700, 1000, 1300]
 
     def __init__(self, state_numer=0):
-        self.__batch_size_index = int(state_numer / len(self.batch_sizes))
+        self.__batch_size_index = int(state_numer / len(self.num_epochs_list))
         self.__num_epochs_index = state_numer % len(self.num_epochs_list)
         if self.is_valid_state():
             self.batch_size = self.batch_sizes[self.__batch_size_index]
