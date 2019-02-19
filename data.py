@@ -78,3 +78,12 @@ class PaddedData(Data):
         self.testing_x = np.pad(self.validation_x,
                                 ((0, 0), (padding_l, padding_r), (padding_l, padding_r), (0, 0)),
                                 'constant', constant_values=[0])
+
+
+class TiledData(Data):
+    def __init__(self, dataset, val_fold, num_tiles):
+        super(TiledData, self).__init__(dataset, val_fold)
+        self.input_shape = (self.input_shape[0] * num_tiles, self.input_shape[1] * num_tiles, self.input_shape[2])
+        self.training_x = np.tile(self.training_x, (1, num_tiles, num_tiles, 1))
+        self.validation_x = np.tile(self.validation_x, (1, num_tiles, num_tiles, 1))
+        self.testing_x = np.tile(self.testing_x, (1, num_tiles, num_tiles, 1))
