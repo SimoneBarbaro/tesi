@@ -28,9 +28,12 @@ class Dataset:
             self.imgs.append(image)
 
     def get_data(self, fold, min_width=None):
+        """
         if min_width is not None and min_width > self.images_width:
             return PaddedData(self, fold, min_width)
         return Data(self, fold)
+        """
+        return TiledData(self, fold, 2)
 
 
 class Data:

@@ -4,8 +4,8 @@ import numpy as np
 
 
 class ExperimentState:
-    batch_sizes = [32, 64, 128]
-    num_epochs_list = [100, 300, 500, 700, 1000, 1300]
+    batch_sizes = [64]
+    num_epochs_list = [500]
 
     def __init__(self, state_numer=0):
         self.__batch_size_index = int(state_numer / len(self.num_epochs_list))
