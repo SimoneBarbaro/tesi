@@ -7,15 +7,15 @@ class Execution:
         self.callbacks = callbacks
 
     def run(self):
-        self.model.fit(self.data.training_x,
-                       self.data.training_y,
-                       batch_size=self.batch_size,
-                       epochs=self.epochs,
-                       validation_split=0.0,
-                       callbacks=self.callbacks,
-                       verbose=0)
+        self.model.model.fit(self.data.training_x,
+                             self.data.training_y,
+                             batch_size=self.batch_size,
+                             epochs=self.epochs,
+                             validation_split=0.0,
+                             callbacks=self.callbacks,
+                             verbose=0)
 
     def evaluate(self):
-        return self.model.evaluate(self.data.validation_x,
-                                   self.data.validation_y,
-                                   batch_size=self.batch_size)
+        return self.model.model.evaluate(self.data.validation_x,
+                                         self.data.validation_y,
+                                         batch_size=self.batch_size)
