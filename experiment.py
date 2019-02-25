@@ -4,42 +4,85 @@ import numpy as np
 
 
 class ExperimentState:
-    batch_sizes = [32, 64, 128]
-    num_epochs_list = [100, 300, 500, 700, 1000, 1300]
-
-    def __init__(self, state_numer=0):
-        self.__batch_size_index = int(state_numer / len(self.num_epochs_list))
-        self.__num_epochs_index = state_numer % len(self.num_epochs_list)
+    def __init__(self, state_info, info_name, state_number=0):
+        self.__state_info = state_info
+        self.__state_number = state_number
+        self.__info_name = info_name
         if self.is_valid_state():
-            self.batch_size = self.batch_sizes[self.__batch_size_index]
-            self.num_epochs = self.num_epochs_list[self.__num_epochs_index]
+            self.__info = self.__state_info[self.__state_number]
+
+    def get_info(self):
+        return {self.__info_name: self.__info}
+
+    def num_states(self):
+        return len(self.__state_info)
+
+    def get_state_number(self):
+        return self.__state_number
 
     def is_valid_state(self):
-        return self.__batch_size_index < len(self.batch_sizes) and self.__num_epochs_index < len(self.num_epochs_list)
+        return self.__state_number < len(self.__state_info)
+
+    def get_start(self):
+        return ExperimentState(self.__state_info, self.__info_name)
+
+    def next(self):
+        return ExperimentState(self.__state_info, self.__info_name, self.__state_number + 1)
+
+
+class StateDecorator(ExperimentState):
+    def __init__(self, state_info, info_name, state_number=0, state: ExperimentState = None):
+        super(StateDecorator, self).__init__(state_info, info_name, state_number)
+        self.__inner_state = state
+
+    def get_info(self):
+        return {**super(StateDecorator, self).get_info(), **self.__inner_state.get_info()}
+
+    def num_states(self):
+        return self.__inner_state.num_states() * len(self.__state_info)
+
+    def get_state_number(self):
+        return self.__inner_state.get_state_number() + \
+               self.__inner_state.num_states() * super(StateDecorator, self).get_state_number()
+
+    def is_valid_state(self):
+        return self.__inner_state.is_valid_state() and super(StateDecorator, self).is_valid_state()
+
+    def get_start(self):
+        return StateDecorator(self.__state_info, self.__info_name, state=self.__inner_state.get_start())
+
+    def next(self):
+        if self.__inner_state.next().is_valid_state():
+            next_state = self.__state_number + 1
+            next_inner_state = self.__inner_state.next()
+        else:
+            next_state = self.__state_number
+            next_inner_state = self.__inner_state.get_start()
+        return StateDecorator(self.__state_info, self.__info_name, next_state, next_inner_state)
 
 
 class Experiment:
-    def __init__(self, model_type, dataset, output_file, last_state_number=-1):
+    def __init__(self, model_type, dataset, epochs, output_file, initial_state, metrics):
         self.model_type = model_type
         self.dataset = dataset
+        self.epochs = epochs
         self.output_file = output_file
-        self.state_number = last_state_number + 1
+        self.state = initial_state
+        self.metrics = metrics
 
     def resume(self):
-        state = ExperimentState(self.state_number)
-        while state.is_valid_state():
+        while self.state.is_valid_state():
             evals = []
             for f in range(0, len(self.dataset.folds)):
                 data = self.dataset.get_data(f, self.model_type.get_min_input_width())
-                model = models.get_model(data, self.model_type)
-                execution = Execution(model, data, state.batch_size, state.num_epochs)
-                execution.run()
+                model = models.create_model(self.model_type, data.input_shape, self.metrics)
+                # TODO is this what I want?
+                execution = Execution(model, data, self.state.get_info()["batch_size"], self.epochs)
+                execution.run()  # TODO save checkpoints and evaluate with callbacks?
                 evals.append(execution.evaluate())
-            self.output_file.write(str(state.batch_size) + " " +
-                                   str(state.num_epochs) + " " +
-                                   str(merge_results(evals)) + "\n")
-            self.state_number += 1
-            state = ExperimentState(self.state_number)
+            self.output_file.write(str(self.state.get_info()) + " " +
+                                   str(merge_results(evals)) + "\n")  # TODO metrics?
+            self.state = self.state.next()
 
 
 def merge_results(results):

@@ -34,7 +34,7 @@ class Dataset:
 
 
 class Data:
-    def __init__(self, dataset, val_fold):
+    def __init__(self, dataset: Dataset, val_fold):
         self.input_shape = dataset.input_shape
         self.num_classes = dataset.num_classes
         self.training_x = []
