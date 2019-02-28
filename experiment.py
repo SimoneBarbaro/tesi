@@ -72,7 +72,6 @@ class CheckProgressCallback(keras.callbacks.Callback):
     def on_epoch_end(self, epoch, logs=None):
         if epoch in self.epochs_to_check:
             self.evals[self.epochs_to_check.index(epoch)] = self.evaluate()
-            self.check_function(self.model)
 
 
 class Experiment:
