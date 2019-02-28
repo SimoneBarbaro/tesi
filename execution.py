@@ -1,18 +1,17 @@
 class Execution:
-    def __init__(self, model, data, batch_size, epochs, callbacks=None):
+    def __init__(self, model, data, batch_size, epochs):
         self.model = model
         self.data = data
         self.batch_size = batch_size
         self.epochs = epochs
-        self.callbacks = callbacks
 
-    def run(self):
+    def run(self, callbacks=None):
         self.model.model.fit(self.data.training_x,
                              self.data.training_y,
                              batch_size=self.batch_size,
                              epochs=self.epochs,
                              validation_split=0.0,
-                             callbacks=self.callbacks,
+                             callbacks=callbacks,
                              verbose=0)
 
     def evaluate(self):

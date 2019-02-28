@@ -12,9 +12,9 @@ class ExperimentModel:
         out = keras.layers.Dense(512, activation='relu')(out)  # from paper
         out = keras.layers.Dense(9, activation='softmax')(out)  # TODO 9
         # self.model = keras.Model(inputs=inp, outputs=out, name=model.name + ('_frozen' if freeze else ''))
-        self.model = keras.Model(inputs=inp, outputs=out)  # TODO name
+        self.model = keras.Model(inputs=inp, outputs=out, name=model.name)  # TODO name
         self.model.compile(optimizer=keras.optimizers.SGD(lr=0.001, momentum=0.9, decay=0.000001, nesterov=True),
-                           loss='sparse_categorical_crossentropy', metrics=metrics, name=model.name)
+                           loss='sparse_categorical_crossentropy', metrics=metrics)
 
     @staticmethod
     def __freeze_model(model: keras.Model):
