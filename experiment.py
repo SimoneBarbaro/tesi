@@ -70,7 +70,7 @@ class CheckProgressCallback(keras.callbacks.Callback):
         self.evaluate = evaluate
 
     def on_epoch_end(self, epoch, logs=None):
-        print(epoch)
+        print("epoch: " + str(epoch) + "\n")
         if epoch in self.epochs_to_check:
             self.evals[self.epochs_to_check.index(epoch)].append(self.evaluate())
 
