@@ -81,7 +81,7 @@ class Experiment:
         self.epochs = epochs
         self.output_file = output_file
         self.state = initial_state
-        self.metrics = metrics
+        self.metrics = ["loss"] + metrics
         self.callbacks = []
         self.callbacks.append(None)
         if log_dir is not None:
