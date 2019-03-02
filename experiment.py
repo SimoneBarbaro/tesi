@@ -110,8 +110,6 @@ class Experiment:
                                            str(merge_results(self.metrics, ev)) + "\n")
                 except Exception as e:
                     print(e)
-                self.output_file.write(str(self.state.get_info()) + " " + "epochs: " + str(self.epochs[i]) +
-                                       str(merge_results(self.metrics, ev)) + "\n")
             self.state = self.state.next()
 
 
