@@ -81,7 +81,7 @@ class Experiment:
         self.epochs = epochs
         self.output_file = output_file
         self.state = initial_state
-        self.metrics = ["loss"] + metrics
+        self.metrics = metrics
         self.callbacks = []
         self.callbacks.append(None)
         if log_dir is not None:
@@ -107,7 +107,7 @@ class Experiment:
                     print("epochs: " + str(self.epochs[i]))
                     print(merge_results(self.metrics, ev))
                     self.output_file.write(str(self.state.get_info()) + " " + "epochs: " + str(self.epochs[i]) +
-                                           str(merge_results(self.metrics, ev)) + "\n")
+                                           str(merge_results(["loss"] + self.metrics, ev)) + "\n")
                 except Exception as e:
                     print(e)
             self.state = self.state.next()
