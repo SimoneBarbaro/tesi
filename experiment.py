@@ -89,7 +89,7 @@ class Experiment:
 
     def resume(self):
         while self.state.is_valid_state():
-            evals = [0 for _ in range(len(self.epochs))]
+            evals = [[] for _ in range(len(self.epochs))]
             for f in range(0, len(self.dataset.folds)):
                 # data = self.dataset.get_data(f, self.model_type.get_min_input_width())
                 data = self.dataset.get_data(f)  # TODO lost min input width
@@ -98,10 +98,18 @@ class Experiment:
                 execution = Execution(model, data, self.state.get_info()["batch_size"], self.epochs[-1])
                 self.callbacks[0] = CheckProgressCallback(self.epochs, evals, execution.evaluate)
                 execution.run(self.callbacks)
-                evals.append(execution.evaluate())
+                evals[-1].append(execution.evaluate())
             for i, ev in enumerate(evals):
                 print(evals)
                 print(ev)
+                try:
+                    print(self.state.get_info())
+                    print("epochs: " + str(self.epochs[i]))
+                    print(merge_results(self.metrics, ev))
+                    self.output_file.write(str(self.state.get_info()) + " " + "epochs: " + str(self.epochs[i]) +
+                                           str(merge_results(self.metrics, ev)) + "\n")
+                except Exception as e:
+                    print(e)
                 self.output_file.write(str(self.state.get_info()) + " " + "epochs: " + str(self.epochs[i]) +
                                        str(merge_results(self.metrics, ev)) + "\n")
             self.state = self.state.next()
