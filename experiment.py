@@ -99,7 +99,6 @@ class Experiment:
                 execution = Execution(model, data, self.state.get_info()["batch_size"], self.epochs[-1])
                 self.callbacks[0] = CheckProgressCallback(self.epochs, evals, execution.evaluate)
                 execution.run(self.callbacks)
-                evals[-1].append(execution.evaluate())
             for i, ev in enumerate(evals):
                 print(evals)
                 print(ev)
