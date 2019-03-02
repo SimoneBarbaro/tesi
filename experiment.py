@@ -95,7 +95,7 @@ class Experiment:
             for f in range(0, len(self.dataset.folds)):
                 # data = self.dataset.get_data(f, self.model_type.get_min_input_width())
                 data = self.dataset.get_data(f)  # TODO lost min input width
-                model = models.create_model(self.model_type, data.input_shape, self.metrics)
+                model = models.create_model(self.model_type, data.input_shape, data.num_classes, self.metrics)
                 # TODO is this what I want?
                 execution = Execution(model, data, self.state.get_info()["batch_size"], self.epochs[-1])
                 self.callbacks[0] = CheckProgressCallback(self.epochs, evals, execution.evaluate)

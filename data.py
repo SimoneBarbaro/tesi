@@ -13,8 +13,8 @@ class Dataset:
         data = mat["data"]
         self.directory = os.path.join(data[0, 0][0][0][0], data[0, 0][0][1][0])
         self.labels = data[0, 1][0]
-        self.num_classes = len(self.labels)
-        for i in range(0, self.num_classes):
+        self.num_classes = max(self.labels)
+        for i in range(0, len(self.labels)):
             self.labels[i] = self.labels[i] - 1
         self.folds = data[0, 2]
         self.dim1 = data[0, 3][0][0]
@@ -49,12 +49,12 @@ class Data:
             if fold == val_fold:
                 tmp_x = self.validation_x
                 tmp_y = self.validation_y
-            for i in dataset.folds[fold][dataset.dim1:dataset.dim2]:
+            for i in dataset.folds[fold][0:dataset.dim1]:
                 tmp_x.append(dataset.imgs[i - 1])
                 tmp_y.append(dataset.labels[i - 1])
             for i in dataset.folds[fold][dataset.dim1:dataset.dim2]:
-                tmp_x.append(dataset.imgs[i - 1])
-                tmp_y.append(dataset.labels[i - 1])
+                self.testing_x.append(dataset.imgs[i - 1])
+                self.testing_y.append(dataset.labels[i - 1])
         self.training_x = np.array(self.training_x)
         self.training_y = np.array(self.training_y)
         self.validation_x = np.array(self.validation_x)
