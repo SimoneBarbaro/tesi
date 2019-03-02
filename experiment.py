@@ -71,6 +71,7 @@ class CheckProgressCallback(keras.callbacks.Callback):
 
     def on_epoch_end(self, epoch, logs=None):
         epoch = epoch + 1
+        print("epoch " + str(epoch))
         if epoch in self.epochs_to_check:
             self.evals[self.epochs_to_check.index(epoch)].append(self.evaluate())
 
@@ -100,20 +101,10 @@ class Experiment:
                 self.callbacks[0] = CheckProgressCallback(self.epochs, evals, execution.evaluate)
                 execution.run(self.callbacks)
             for i, ev in enumerate(evals):
-                print(evals)
-                print(ev)
-                try:
-                    print(self.state.get_info())
-                    print("epochs: " + str(self.epochs[i]))
-                    print(merge_results(self.metrics, ev))
-                    self.output_file.write(str(self.state.get_info()) + " " + "{epochs: " + str(self.epochs[i]) + "} " +
-                                           str(merge_results(["loss"] + self.metrics, ev)) + "\n")
-                except Exception as e:
-                    print(e)
+                self.output_file.write(str(self.state.get_info()) + " " + "{epochs: " + str(self.epochs[i]) + "} " +
+                                       str(merge_results(["loss"] + self.metrics, ev)) + "\n")
             self.state = self.state.next()
 
 
 def merge_results(metrics, results):
-    print(metrics)
-    print(np.mean(np.array(results), 0))
     return dict(zip(metrics, np.mean(np.array(results), 0)))

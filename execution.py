@@ -12,7 +12,7 @@ class Execution:
                              epochs=self.epochs,
                              validation_split=0.0,
                              callbacks=callbacks,
-                             verbose=1)
+                             verbose=0)
 
     def evaluate(self):
         return self.model.model.evaluate(self.data.validation_x,
