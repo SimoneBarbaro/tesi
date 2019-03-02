@@ -106,4 +106,6 @@ class Experiment:
 
 
 def merge_results(metrics, results):
+    print(metrics)
+    print(np.mean(np.array(results), 0))
     return dict(zip(metrics, np.mean(np.array(results), 0)))
