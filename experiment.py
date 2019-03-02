@@ -100,6 +100,8 @@ class Experiment:
                 execution.run(self.callbacks)
                 evals.append(execution.evaluate())
             for i, ev in enumerate(evals):
+                print(evals)
+                print(ev)
                 self.output_file.write(str(self.state.get_info()) + " " + "epochs: " + str(self.epochs[i]) +
                                        str(merge_results(self.metrics, ev)) + "\n")
             self.state = self.state.next()
