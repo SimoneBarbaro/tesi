@@ -1,7 +1,7 @@
 import sys
 import json
-from data import Dataset
-from experiment import Experiment, ExperimentState
+from src.data.data import Dataset
+from src.experiment.experiment import Experiment, ExperimentState
 
 if __name__ == "__main__":
     with open('confing.json') as f:
@@ -18,7 +18,7 @@ if __name__ == "__main__":
     if len(sys.argv) > 3:
         log_dir = sys.argv[3]
 
-    dataset = Dataset()
+    dataset = Dataset("EILAT_data.mat")
     s = ExperimentState(config_data["batch_sizes"], "batch_size")
     Experiment(model, dataset, config_data["epochs"], file, s, ['accuracy'], log_dir).resume()
 
