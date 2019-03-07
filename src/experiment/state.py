@@ -1,4 +1,8 @@
-class ExperimentState:
+from src.experiment.configs import Config
+from src.experiment.model import ModelFactory
+
+
+class BlankState:
     def __init__(self, state_info, info_name, state_number=0):
         self.__state_info = state_info
         self.__state_number = state_number
@@ -19,14 +23,14 @@ class ExperimentState:
         return self.__state_number < len(self.__state_info)
 
     def get_start(self):
-        return ExperimentState(self.__state_info, self.__info_name)
+        return BlankState(self.__state_info, self.__info_name)
 
     def next(self):
-        return ExperimentState(self.__state_info, self.__info_name, self.__state_number + 1)
+        return BlankState(self.__state_info, self.__info_name, self.__state_number + 1)
 
 
-class StateDecorator(ExperimentState):
-    def __init__(self, state_info, info_name, state_number=0, state: ExperimentState = None):
+class StateDecorator(BlankState):
+    def __init__(self, state_info, info_name, state_number=0, state: BlankState = None):
         super(StateDecorator, self).__init__(state_info, info_name, state_number)
         self.__inner_state = state
 
@@ -54,3 +58,26 @@ class StateDecorator(ExperimentState):
             next_state = self.__state_number
             next_inner_state = self.__inner_state.get_start()
         return StateDecorator(self.__state_info, self.__info_name, next_state, next_inner_state)
+
+
+class ExperimentState(StateDecorator):
+    def __init__(self, config: Config):
+        super(ExperimentState, self).__init__(config.preprocessing, "preprocessing",
+                                              state=BlankState(config.batch_sizes, "batch_size"))
+        self.config = config
+        self.preprocessing = self.get_info()["preprocessing"]
+        self.batch_size = self.get_info()["batch_size"]
+        self.current_fold = -1
+        self.data = None
+
+    def next_data(self):
+        if self.current_fold < self.config.num_folds:
+            self.current_fold = self.current_fold + 1
+            self.data = self.config.data_factory.build_data(self.current_fold, self.preprocessing)
+            return True
+        return False
+
+    def create_model(self):
+        if self.data is not None:
+            return ModelFactory.create_model(self.config.model_name, self.data.input_shape,
+                                             self.data.num_classes, self.config.metrics)

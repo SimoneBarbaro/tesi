@@ -63,4 +63,6 @@ class ModelFactory:
     def create_model(name, input_shape, num_classes, metrics):
         if name == "resnet":
             return Resnet50(input_shape, num_classes, metrics)
+        elif name == "test":
+            return TestModel(input_shape, num_classes, metrics)
         return None

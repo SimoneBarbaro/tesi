@@ -2,6 +2,7 @@ from src.experiment.execution import Execution
 from src.experiment.model import ModelFactory
 from src.experiment.state import ExperimentState
 from src.data.dataset import Dataset
+from src.experiment.configs import Config
 from src.data.data import DataFactory
 import numpy as np
 from tensorflow import keras
@@ -22,15 +23,12 @@ class CheckProgressCallback(keras.callbacks.Callback):
 
 
 class Experiment:
-    def __init__(self, model_name, dataset: Dataset, epochs, output_file,
-                 initial_state: ExperimentState, metrics, log_dir=None):
-        self.model_name = model_name
-        self.dataset = dataset
-        self.epochs = epochs
+    state = ...  # type: ExperimentState
+
+    def __init__(self, confing: Config, output_file, log_dir=None):
+        self.config = confing
+        self.state = self.config.get_initial_state()
         self.output_file = output_file
-        self.state = initial_state
-        self.metrics = metrics
-        self.data_factory = DataFactory(self.dataset)
         self.callbacks = []
         self.callbacks.append(None)
         if log_dir is not None:
@@ -38,18 +36,19 @@ class Experiment:
 
     def resume(self):
         while self.state.is_valid_state():
-            evals = [[] for _ in range(len(self.epochs))]
-            for f in range(0, len(self.dataset.folds)):
+            evals = [[] for _ in range(len(self.config.epochs))]
+            while self.state.next_data():
                 # data = self.dataset.get_data(f, self.model_type.get_min_input_width())
-                data = self.data_factory.build_data(validation_fold=f)
-                model = ModelFactory.create_model(self.model_name, data.input_shape, data.num_classes, self.metrics)
+                data = self.state.data
+                model = self.state.create_model()
                 # TODO is this what I want?
-                execution = Execution(model, data, self.state.get_info()["batch_size"], self.epochs[-1])
-                self.callbacks[0] = CheckProgressCallback(self.epochs, evals, execution.evaluate)
+                execution = Execution(model, data, self.state.batch_size, self.config.max_epochs)
+                self.callbacks[0] = CheckProgressCallback(self.config.epochs, evals, execution.evaluate)
                 execution.run(self.callbacks)
             for i, ev in enumerate(evals):
-                self.output_file.write(str(self.state.get_info()) + " " + "{epochs: " + str(self.epochs[i]) + "} " +
-                                       str(merge_results(["loss"] + self.metrics, ev)) + "\n")
+                self.output_file.write(
+                    str(self.state.get_info()) + " " + "{epochs: " + str(self.config.epochs[i]) + "} " +
+                    str(merge_results(["loss"] + self.config.metrics, ev)) + "\n")
             self.state = self.state.next()
 
 
