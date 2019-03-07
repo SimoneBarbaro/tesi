@@ -1,5 +1,5 @@
 from src.experiment.execution import Execution
-from src.experiment.models import ModelFactory
+from src.experiment.model import ModelFactory
 from src.experiment.state import ExperimentState
 from src.data.dataset import Dataset
 from src.data.data import DataFactory

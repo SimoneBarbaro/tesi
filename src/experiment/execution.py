@@ -1,4 +1,4 @@
-from src.experiment.models import ExperimentModel
+from src.experiment.model import ExperimentModel
 from src.data.data import Data
 
 
