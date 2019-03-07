@@ -1,4 +1,4 @@
-from src.data.dataset import Dataset
+from data.dataset import Dataset
 import numpy as np
 
 

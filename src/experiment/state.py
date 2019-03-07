@@ -1,5 +1,5 @@
-from src.experiment.configs import Config
-from src.experiment.model import ModelFactory
+from experiment.configs import Config
+from experiment.model import ModelFactory
 
 
 class BlankState:
@@ -7,7 +7,7 @@ class BlankState:
         self.__state_info = state_info
         self.__state_number = state_number
         self.__info_name = info_name
-        if self.is_valid_state():
+        if self.__state_number < len(self.__state_info):
             self.__info = self.__state_info[self.__state_number]
 
     def get_info(self):

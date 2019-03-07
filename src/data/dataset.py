@@ -8,7 +8,7 @@ class Dataset:
     def __init__(self, mat_file):
         self.images_width = 64
         self.input_shape = (self.images_width, self.images_width, 3)
-        mat = scipy.io.loadmat(mat_file)
+        mat = scipy.io.loadmat(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, mat_file))
         data = mat["data"]
         self.directory = os.path.join(data[0, 0][0][0][0], data[0, 0][0][1][0])
         self.labels = data[0, 1][0]

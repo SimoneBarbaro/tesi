@@ -1,10 +1,11 @@
+import os
 import sys
 import json
-from src.experiment.configs import Config
-from src.experiment.experiment import Experiment
+from experiment.configs import Config
+from experiment.experiment import Experiment
 
 if __name__ == "__main__":
-    with open('confing.json') as f:
+    with open(os.path.join(os.path.dirname(__file__), os.pardir, 'config', 'config.json')) as f:
         config_data = json.load(f)
     log_dir = None
     if len(sys.argv) > 1:

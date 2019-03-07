@@ -1,9 +1,6 @@
-from src.experiment.execution import Execution
-from src.experiment.model import ModelFactory
-from src.experiment.state import ExperimentState
-from src.data.dataset import Dataset
-from src.experiment.configs import Config
-from src.data.data import DataFactory
+from experiment.execution import Execution
+from experiment.state import ExperimentState
+from experiment.configs import Config
 import numpy as np
 from tensorflow import keras
 
@@ -23,11 +20,10 @@ class CheckProgressCallback(keras.callbacks.Callback):
 
 
 class Experiment:
-    state = ...  # type: ExperimentState
 
     def __init__(self, confing: Config, output_file, log_dir=None):
         self.config = confing
-        self.state = self.config.get_initial_state()
+        self.state = ExperimentState(self.config)
         self.output_file = output_file
         self.callbacks = []
         self.callbacks.append(None)

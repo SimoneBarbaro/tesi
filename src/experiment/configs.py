@@ -1,6 +1,5 @@
-from src.experiment.state import ExperimentState
-from src.data.data import Dataset
-from src.data.data import DataFactory
+from data.data import Dataset
+from data.data import DataFactory
 
 
 class Config:
@@ -14,6 +13,3 @@ class Config:
         self.max_epochs = max(self.epochs)
         self.metrics = confing_data["metrics"]
         self.preprocessing = confing_data["preprocessing"]
-
-    def get_initial_state(self):
-        return ExperimentState(self)

@@ -1,5 +1,5 @@
-from src.experiment.model import ExperimentModel
-from src.data.data import Data
+from experiment.model import ExperimentModel
+from data.data import Data
 
 
 class Execution:
