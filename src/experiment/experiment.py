@@ -34,10 +34,8 @@ class Experiment:
         while self.state.is_valid_state():
             evals = [[] for _ in range(len(self.config.epochs))]
             while self.state.next_data():
-                # data = self.dataset.get_data(f, self.model_type.get_min_input_width())
                 data = self.state.data
                 model = self.state.create_model()
-                # TODO is this what I want?
                 execution = Execution(model, data, self.state.batch_size, self.config.max_epochs)
                 self.callbacks[0] = CheckProgressCallback(self.config.epochs, evals, execution.evaluate)
                 execution.run(self.callbacks)
