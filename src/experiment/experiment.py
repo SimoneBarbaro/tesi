@@ -41,7 +41,7 @@ class Experiment:
                 execution = Execution(model, data, self.state.batch_size, self.config.max_epochs)
                 self.callbacks[0] = CheckProgressCallback(self.config.epochs, evals, execution.evaluate)
                 if self.log_dir is not None:
-                    log_dir = os.path.join(self.log_dir, self.state.get_state_number() + "_" + str(f))
+                    log_dir = os.path.join(self.log_dir, str(self.state.get_state_number()) + "_" + str(f))
                     if not os.path.exists(log_dir):
                         os.makedirs(log_dir)
                     self.callbacks[1] = keras.callbacks.TensorBoard(log_dir=log_dir)
