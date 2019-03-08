@@ -46,6 +46,7 @@ class Experiment:
                         os.makedirs(log_dir)
                     self.callbacks[1] = keras.callbacks.TensorBoard(log_dir=log_dir)
                 execution.run(self.callbacks)
+                f += 1
             for i, ev in enumerate(evals):
                 self.output_file.write(
                     str(self.state.get_info()) + " " + "{epochs: " + str(self.config.epochs[i]) + "} " +
