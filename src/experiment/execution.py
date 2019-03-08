@@ -14,7 +14,9 @@ class Execution:
                        self.data.training_y,
                        self.batch_size,
                        self.epochs,
-                       callbacks)
+                       callbacks,
+                       self.data.validation_x,
+                       self.data.validation_y)
 
     def evaluate(self):
         return self.model.evaluate(self.data.validation_x,

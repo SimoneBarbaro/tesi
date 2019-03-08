@@ -7,11 +7,12 @@ class ExperimentModel:
         self.model.compile(optimizer=keras.optimizers.SGD(lr=0.001, momentum=0.9, decay=0.000001, nesterov=True),
                            loss='sparse_categorical_crossentropy', metrics=metrics)
 
-    def fit(self, x, y, batch_size, epochs, callbacks):
+    def fit(self, x, y, batch_size, epochs, callbacks, val_x, val_y):
         self.model.fit(x, y,
                        batch_size=batch_size,
                        epochs=epochs,
                        callbacks=callbacks,
+                       validation_data=(val_x, val_y),
                        verbose=0)
 
     def evaluate(self, x, y, batch_size):
