@@ -3,7 +3,7 @@ from experiment.state import ExperimentState
 from experiment.configs import Config
 import numpy as np
 from tensorflow import keras
-
+import os
 
 class CheckProgressCallback(keras.callbacks.Callback):
     def __init__(self, epochs_to_check, evals, evaluate):
@@ -25,6 +25,7 @@ class Experiment:
         self.config = confing
         self.state = ExperimentState(self.config)
         self.output_file = output_file
+        self.log_dir = log_dir
         self.callbacks = []
         self.callbacks.append(None)
         if log_dir is not None:
@@ -33,11 +34,17 @@ class Experiment:
     def resume(self):
         while self.state.is_valid_state():
             evals = [[] for _ in range(len(self.config.epochs))]
+            f = 0
             while self.state.next_data():
                 data = self.state.data
                 model = self.state.create_model()
                 execution = Execution(model, data, self.state.batch_size, self.config.max_epochs)
                 self.callbacks[0] = CheckProgressCallback(self.config.epochs, evals, execution.evaluate)
+                if self.log_dir is not None:
+                    log_dir = os.path.join(self.log_dir, self.state.get_state_number() + "_" + str(f))
+                    if not os.path.exists(log_dir):
+                        os.makedirs(log_dir)
+                    self.callbacks[1] = keras.callbacks.TensorBoard(log_dir=log_dir)
                 execution.run(self.callbacks)
             for i, ev in enumerate(evals):
                 self.output_file.write(
