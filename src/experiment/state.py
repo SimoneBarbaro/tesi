@@ -7,6 +7,7 @@ class BlankState:
         self._state_info = state_info
         self._state_number = state_number
         self._info_name = info_name
+        self.__info = None
         if self._state_number < len(self._state_info):
             self.__info = self._state_info[self._state_number]
 
@@ -50,6 +51,9 @@ class StateDecorator(BlankState):
     def get_start(self):
         return StateDecorator(self._state_info, self._info_name, state=self.__inner_state.get_start())
 
+    def _create_next(self, next_state, next_inner_state):
+        return StateDecorator(self._state_info, self._info_name, next_state, next_inner_state)
+
     def next(self):
         if self.__inner_state.next().is_valid_state():
             next_state = self._state_number
@@ -57,13 +61,15 @@ class StateDecorator(BlankState):
         else:
             next_state = self._state_number + 1
             next_inner_state = self.__inner_state.get_start()
-        return StateDecorator(self._state_info, self._info_name, next_state, next_inner_state)
+        return self._create_next(next_state, next_inner_state)
 
 
 class ExperimentState(StateDecorator):
-    def __init__(self, config: Config):
+    def __init__(self, config: Config = None, state_number=0, state: BlankState = None):
         super(ExperimentState, self).__init__(config.preprocessing, "preprocessing",
-                                              state=BlankState(config.batch_sizes, "batch_size"))
+                                              state_number=state_number,
+                                              state=BlankState(config.batch_sizes, "batch_size") if state is None
+                                              else state)
         self.config = config
         self.preprocessing = self.get_info()["preprocessing"]
         self.batch_size = self.get_info()["batch_size"]
@@ -81,3 +87,6 @@ class ExperimentState(StateDecorator):
         if self.data is not None:
             return ModelFactory.create_model(self.config.model_name, self.data.input_shape,
                                              self.data.num_classes, self.config.metrics)
+
+    def _create_next(self, next_state, next_inner_state):
+        return ExperimentState(self.config, next_state, next_inner_state)
