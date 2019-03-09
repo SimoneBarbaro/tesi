@@ -7,19 +7,15 @@ from experiment.experiment import Experiment
 if __name__ == "__main__":
     log_dir = None
     if len(sys.argv) > 1:
-        model = sys.argv[1]
-    else:
-        model = "test"
-    if len(sys.argv) > 2:
-        file = open(sys.argv[2])
+        file = open(sys.argv[1])
     else:
         file = sys.stdin
-    if len(sys.argv) > 3:
-        config_file = sys.argv[3]
+    if len(sys.argv) > 2:
+        config_file = sys.argv[2] + "_config.json"
     else:
-        config_file = 'eilat_config.json'
-    if len(sys.argv) > 4:
-        log_dir = sys.argv[4]
+        config_file = 'test_config.json'
+    if len(sys.argv) > 3:
+        log_dir = sys.argv[3]
 
     with open(os.path.join(os.path.dirname(__file__), os.pardir, 'config', config_file)) as f:
         config_data = json.load(f)
