@@ -22,8 +22,8 @@ class OneFoldData(Data):
             self.training_x.append(dataset.imgs[i - 1])
             self.training_y.append(dataset.labels[i - 1])
         for i in dataset.folds[val_fold][dataset.dim1:dataset.dim2]:
-            self.testing_x.append(dataset.imgs[i - 1])
-            self.testing_y.append(dataset.labels[i - 1])
+            self.validation_x.append(dataset.imgs[i - 1])
+            self.validation_y.append(dataset.labels[i - 1])
         self.training_x = np.array(self.training_x)
         self.training_y = np.array(self.training_y)
         self.validation_x = np.array(self.validation_x)
