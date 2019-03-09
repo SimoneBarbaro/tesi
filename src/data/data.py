@@ -3,7 +3,7 @@ import numpy as np
 
 
 class Data:
-    def __init__(self, dataset: Dataset, val_fold):
+    def __init__(self, dataset: Dataset):
         self.input_shape = dataset.input_shape
         self.num_classes = dataset.num_classes
         self.training_x = []
@@ -12,6 +12,30 @@ class Data:
         self.validation_y = []
         self.testing_x = []
         self.testing_y = []
+
+
+class OneFoldData(Data):
+    def __init__(self, dataset: Dataset, val_fold):
+        super(OneFoldData, self).__init__(dataset)
+
+        for i in dataset.folds[val_fold][0:dataset.dim1]:
+            self.training_x.append(dataset.imgs[i - 1])
+            self.training_y.append(dataset.labels[i - 1])
+        for i in dataset.folds[val_fold][dataset.dim1:dataset.dim2]:
+            self.testing_x.append(dataset.imgs[i - 1])
+            self.testing_y.append(dataset.labels[i - 1])
+        self.training_x = np.array(self.training_x)
+        self.training_y = np.array(self.training_y)
+        self.validation_x = np.array(self.validation_x)
+        self.validation_y = np.array(self.validation_y)
+        self.testing_x = self.validation_x
+        self.testing_y = self.validation_y
+
+
+class CVData(Data):
+    def __init__(self, dataset: Dataset, val_fold):
+        super(CVData, self).__init__(dataset)
+
         for fold in range(0, len(dataset.folds)):
             tmp_x = self.training_x
             tmp_y = self.training_y
@@ -31,8 +55,10 @@ class Data:
         self.testing_x = np.array(self.testing_x)
         self.testing_y = np.array(self.testing_y)
 
+        assert(np.isin(self.training_x, self.validation_x).any() is False)
 
-class PaddedData(Data):
+
+class PaddedData(CVData):
     def __init__(self, dataset: Dataset, val_fold, new_width):
         super(PaddedData, self).__init__(dataset, val_fold)
         self.input_shape = (new_width, new_width, self.input_shape[2])
@@ -49,7 +75,7 @@ class PaddedData(Data):
                                 'constant', constant_values=[0])
 
 
-class TiledData(Data):
+class TiledData(CVData):
     def __init__(self, dataset: Dataset, val_fold, num_tiles):
         super(TiledData, self).__init__(dataset, val_fold)
         self.input_shape = (self.input_shape[0] * num_tiles, self.input_shape[1] * num_tiles, self.input_shape[2])
@@ -64,4 +90,4 @@ class DataFactory:
 
     def build_data(self, validation_fold=0, preprocessing=None, **preprocessing_args):
         # TODO the rest
-        return Data(self.dataset, validation_fold)
+        return OneFoldData(self.dataset, validation_fold)
