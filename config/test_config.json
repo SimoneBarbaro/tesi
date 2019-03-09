@@ -1,0 +1,8 @@
+{
+  "dataset": "EILAT_data.mat",
+  "model": "test",
+  "batch_sizes": [64],
+  "epochs": [3],
+  "metrics": ["accuracy"],
+  "preprocessing": [null]
+}
