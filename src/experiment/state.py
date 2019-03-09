@@ -71,7 +71,7 @@ class ExperimentState(StateDecorator):
         self.data = None
 
     def next_data(self):
-        if self.current_fold < self.config.num_folds:
+        if self.current_fold + 1 < self.config.num_folds:
             self.current_fold = self.current_fold + 1
             self.data = self.config.data_factory.build_data(self.current_fold, self.preprocessing)
             return True
