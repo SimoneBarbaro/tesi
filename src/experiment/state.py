@@ -4,29 +4,29 @@ from experiment.model import ModelFactory
 
 class BlankState:
     def __init__(self, state_info, info_name, state_number=0):
-        self.__state_info = state_info
-        self.__state_number = state_number
-        self.__info_name = info_name
-        if self.__state_number < len(self.__state_info):
-            self.__info = self.__state_info[self.__state_number]
+        self._state_info = state_info
+        self._state_number = state_number
+        self._info_name = info_name
+        if self._state_number < len(self._state_info):
+            self.__info = self._state_info[self._state_number]
 
     def get_info(self):
-        return {self.__info_name: self.__info}
+        return {self._info_name: self.__info}
 
     def num_states(self):
-        return len(self.__state_info)
+        return len(self._state_info)
 
     def get_state_number(self):
-        return self.__state_number
+        return self._state_number
 
     def is_valid_state(self):
-        return self.__state_number < len(self.__state_info)
+        return self._state_number < len(self._state_info)
 
     def get_start(self):
-        return BlankState(self.__state_info, self.__info_name)
+        return BlankState(self._state_info, self._info_name)
 
     def next(self):
-        return BlankState(self.__state_info, self.__info_name, self.__state_number + 1)
+        return BlankState(self._state_info, self._info_name, self._state_number + 1)
 
 
 class StateDecorator(BlankState):
@@ -38,7 +38,7 @@ class StateDecorator(BlankState):
         return {**super(StateDecorator, self).get_info(), **self.__inner_state.get_info()}
 
     def num_states(self):
-        return self.__inner_state.num_states() * len(self.__state_info)
+        return self.__inner_state.num_states() * len(self._state_info)
 
     def get_state_number(self):
         return self.__inner_state.get_state_number() + \
@@ -48,16 +48,16 @@ class StateDecorator(BlankState):
         return self.__inner_state.is_valid_state() and super(StateDecorator, self).is_valid_state()
 
     def get_start(self):
-        return StateDecorator(self.__state_info, self.__info_name, state=self.__inner_state.get_start())
+        return StateDecorator(self._state_info, self._info_name, state=self.__inner_state.get_start())
 
     def next(self):
         if self.__inner_state.next().is_valid_state():
-            next_state = self.__state_number + 1
+            next_state = self._state_number
             next_inner_state = self.__inner_state.next()
         else:
-            next_state = self.__state_number
+            next_state = self._state_number + 1
             next_inner_state = self.__inner_state.get_start()
-        return StateDecorator(self.__state_info, self.__info_name, next_state, next_inner_state)
+        return StateDecorator(self._state_info, self._info_name, next_state, next_inner_state)
 
 
 class ExperimentState(StateDecorator):

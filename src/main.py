@@ -9,7 +9,7 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         file = open(sys.argv[1])
     else:
-        file = sys.stdin
+        file = sys.stdout
     if len(sys.argv) > 2:
         config_file = sys.argv[2] + "_config.json"
     else:

@@ -16,7 +16,7 @@ class ExperimentModel:
                        verbose=0)
 
     def evaluate(self, x, y, batch_size):
-        self.model.evaluate(x, y, batch_size=batch_size)
+        return self.model.evaluate(x, y, batch_size=batch_size)
 
 
 class TestModel(ExperimentModel):

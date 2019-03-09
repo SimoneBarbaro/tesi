@@ -5,6 +5,7 @@ import numpy as np
 from tensorflow import keras
 import os
 
+
 class CheckProgressCallback(keras.callbacks.Callback):
     def __init__(self, epochs_to_check, evals, evaluate):
         super(CheckProgressCallback, self).__init__()
@@ -48,6 +49,7 @@ class Experiment:
                 execution.run(self.callbacks)
                 f += 1
             for i, ev in enumerate(evals):
+                print(self.output_file)
                 self.output_file.write(
                     str(self.state.get_info()) + " " + "{epochs: " + str(self.config.epochs[i]) + "} " +
                     str(merge_results(["loss"] + self.config.metrics, ev)) + "\n")

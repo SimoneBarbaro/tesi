@@ -2,7 +2,7 @@
   "dataset": "EILAT_data.mat",
   "model": "test",
   "batch_sizes": [64],
-  "epochs": [3],
+  "epochs": [1],
   "metrics": ["accuracy"],
   "preprocessing": [null]
 }
