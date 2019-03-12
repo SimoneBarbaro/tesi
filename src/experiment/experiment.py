@@ -1,5 +1,6 @@
 from experiment.execution import Execution
-from experiment.state import ExperimentState
+# from experiment.state import ExperimentState
+from experiment.state import CVState
 from experiment.configs import Config
 import numpy as np
 from tensorflow import keras
@@ -24,7 +25,8 @@ class Experiment:
 
     def __init__(self, confing: Config, output_file, log_dir=None):
         self.config = confing
-        self.state = ExperimentState(self.config)
+        # self.state = ExperimentState(self.config)
+        self.state = CVState(self.config)
         self.output_file = output_file
         self.log_dir = log_dir
         self.callbacks = []
@@ -36,8 +38,7 @@ class Experiment:
         while self.state.is_valid_state():
             evals = [[] for _ in range(len(self.config.epochs))]
             f = 0
-            while self.state.next_data():
-                data = self.state.data
+            for data in self.state.next_data():
                 model = self.state.create_model()
                 execution = Execution(model, data, self.state.batch_size, self.config.max_epochs)
                 self.callbacks[0] = CheckProgressCallback(self.config.epochs, evals, execution.evaluate)
@@ -49,7 +50,6 @@ class Experiment:
                 execution.run(self.callbacks)
                 f += 1
             for i, ev in enumerate(evals):
-                print(self.output_file)
                 self.output_file.write(
                     str(self.state.get_info()) + " " + "{epochs: " + str(self.config.epochs[i]) + "} " +
                     str(merge_results(["loss"] + self.config.metrics, ev)) + "\n")

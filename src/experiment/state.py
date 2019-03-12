@@ -1,5 +1,7 @@
 from experiment.configs import Config
 from experiment.model import ModelFactory
+from sklearn.model_selection import KFold
+
 
 
 class BlankState:
@@ -65,7 +67,7 @@ class StateDecorator(BlankState):
 
 
 class ExperimentState(StateDecorator):
-    def __init__(self, config: Config = None, state_number=0, state: BlankState = None):
+    def __init__(self, config: Config, state_number=0, state: BlankState = None):
         super(ExperimentState, self).__init__(config.preprocessing, "preprocessing",
                                               state_number=state_number,
                                               state=BlankState(config.batch_sizes, "batch_size") if state is None
@@ -73,20 +75,28 @@ class ExperimentState(StateDecorator):
         self.config = config
         self.preprocessing = self.get_info()["preprocessing"]
         self.batch_size = self.get_info()["batch_size"]
-        self.current_fold = -1
-        self.data = None
 
     def next_data(self):
-        if self.current_fold + 1 < self.config.num_folds:
-            self.current_fold = self.current_fold + 1
-            self.data = self.config.data_factory.build_data(self.current_fold, self.preprocessing)
-            return True
-        return False
+        for fold in range(self.config.num_folds):
+            yield self.config.data_factory.build_data(fold, self.preprocessing)
 
     def create_model(self):
-        if self.data is not None:
-            return ModelFactory.create_model(self.config.model_name, self.data.input_shape,
-                                             self.data.num_classes, self.config.metrics)
+        return ModelFactory.create_model(self.config.model_name, self.config.dataset.input_shape,
+                                         self.config.dataset.num_classes, self.config.metrics)
 
     def _create_next(self, next_state, next_inner_state):
         return ExperimentState(self.config, next_state, next_inner_state)
+
+
+class CVState(ExperimentState):
+    def __init__(self, config: Config, state_number=0, state: BlankState = None, random_state=1):
+        super(CVState, self).__init__(config, state_number, state)
+        self.random_state = random_state
+        self.kfold = KFold(config.num_folds, True, self.random_state)
+
+    def next_data(self):
+        for train_index, test_index, in self.kfold.split(self.config.dataset.imgs):
+            yield self.config.data_factory.build_data(train_index=train_index, test_index=test_index)
+
+    def _create_next(self, next_state, next_inner_state):
+        return CVState(self.config, next_state, next_inner_state, self.random_state)
