@@ -51,11 +51,11 @@ class CompletedModel(ExperimentModel):
 
 
 class Resnet50(CompletedModel):
-    def __init__(self, input_shape, num_classes, metrics):
+    def __init__(self, input_shape, num_classes, metrics, freeze=False):
         super(Resnet50, self).__init__(keras.applications.ResNet50(weights='imagenet',
                                                                    include_top=False,
                                                                    input_shape=input_shape),
-                                       input_shape, num_classes, metrics, False)
+                                       input_shape, num_classes, metrics, freeze)
 
 
 class ModelFactory:
@@ -64,6 +64,8 @@ class ModelFactory:
     def create_model(name, input_shape, num_classes, metrics):
         if name == "resnet":
             return Resnet50(input_shape, num_classes, metrics)
+        elif name == "frozen_resnet":
+            return Resnet50(input_shape, num_classes, metrics, True)
         elif name == "test":
             return TestModel(input_shape, num_classes, metrics)
         return None
