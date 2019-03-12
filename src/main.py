@@ -7,7 +7,7 @@ from experiment.experiment import Experiment
 if __name__ == "__main__":
     log_dir = None
     if len(sys.argv) > 1:
-        file = open(sys.argv[1])
+        file = open(sys.argv[1], 'w')
     else:
         file = sys.stdout
     if len(sys.argv) > 2:

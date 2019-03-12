@@ -62,8 +62,7 @@ class CVData(Data):
 class SklearnCVData(Data):
     def __init__(self, dataset: Dataset, train_index, val_index):
         super(SklearnCVData, self).__init__(dataset)
-        for fold in range(len(dataset.folds)):
-            self._split_train_test(dataset, fold)
+        self._split_train_test(dataset, 0)
         self._wrap_data()
         self.validation_x = self.training_x[val_index]
         self.validation_y = self.training_y[val_index]
