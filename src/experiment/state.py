@@ -95,7 +95,7 @@ class CVState(ExperimentState):
         self.kfold = KFold(config.num_folds, True, self.random_state)
 
     def next_data(self):
-        for train_index, test_index, in self.kfold.split(self.config.dataset.imgs):
+        for train_index, test_index, in self.kfold.split(range(self.config.dataset.dim1)):  # TODO better way to do this
             yield self.config.data_factory.build_data(train_index=train_index, test_index=test_index)
 
     def _create_next(self, next_state, next_inner_state):
