@@ -70,7 +70,7 @@ class PaddedData(CVData):
         self.validation_x = np.pad(self.validation_x,
                                    ((0, 0), (padding_l, padding_r), (padding_l, padding_r), (0, 0)),
                                    'constant', constant_values=[0])
-        self.testing_x = np.pad(self.validation_x,
+        self.testing_x = np.pad(self.testing_x,
                                 ((0, 0), (padding_l, padding_r), (padding_l, padding_r), (0, 0)),
                                 'constant', constant_values=[0])
 
