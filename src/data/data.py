@@ -70,9 +70,22 @@ class SklearnCVData(Data):
         self.training_y = self.training_y[train_index]
 
 
-class PaddedData(CVData):
-    def __init__(self, dataset: Dataset, val_fold, new_width):
-        super(PaddedData, self).__init__(dataset, val_fold)
+class PreprocessedData(Data):
+    def __init__(self, dataset: Dataset, data: Data):
+        super(PreprocessedData, self).__init__(dataset)
+        self.training_x = data.training_x
+        self.training_y = data.training_y
+        self.validation_x = data.validation_x
+        self.validation_y = data.validation_y
+        self.testing_x = data.testing_x
+        self.testing_y = data.testing_y
+
+
+class PaddedData(PreprocessedData):
+    def __init__(self, dataset: Dataset, data: Data, num_tiles=1):
+        super(PaddedData, self).__init__(dataset, data)
+
+        new_width = self.input_shape[0] + num_tiles
         self.input_shape = (new_width, new_width, self.input_shape[2])
         padding_l = int((new_width - dataset.images_width) / 2)
         padding_r = int((new_width - dataset.images_width + 1) / 2)
@@ -87,9 +100,9 @@ class PaddedData(CVData):
                                 'constant', constant_values=[0])
 
 
-class TiledData(CVData):
-    def __init__(self, dataset: Dataset, val_fold, num_tiles):
-        super(TiledData, self).__init__(dataset, val_fold)
+class TiledData(PreprocessedData):
+    def __init__(self, dataset: Dataset, data: Data, num_tiles=1):
+        super(TiledData, self).__init__(dataset, data)
         self.input_shape = (self.input_shape[0] * num_tiles, self.input_shape[1] * num_tiles, self.input_shape[2])
         self.training_x = np.tile(self.training_x, (1, num_tiles, num_tiles, 1))
         self.validation_x = np.tile(self.validation_x, (1, num_tiles, num_tiles, 1))
@@ -100,8 +113,14 @@ class DataFactory:
     def __init__(self, datasset: Dataset):
         self.dataset = datasset
 
-    def build_data(self, validation_fold=0, train_index=None, test_index=None, preprocessing=None, **preprocessing_args):
-        # TODO the rest
+    def build_data(self, validation_fold=0, train_index=None, test_index=None,
+                   preprocessing=None, **preprocessing_args):
         if train_index is None or test_index is None:
-            return OneFoldData(self.dataset, validation_fold)
-        return SklearnCVData(self.dataset, train_index, test_index)
+            result = OneFoldData(self.dataset, validation_fold)
+        else:
+            result = SklearnCVData(self.dataset, train_index, test_index)
+        if preprocessing == "padding":
+            result = PaddedData(self.dataset, result, preprocessing_args.get("num_tiles", 1))
+        elif preprocessing == "tiling":
+            result = TiledData(self.dataset, result, preprocessing_args.get("num_tiles", 1))
+        return result
