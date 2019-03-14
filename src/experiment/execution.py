@@ -1,5 +1,5 @@
 from experiment.model import ExperimentModel
-from data.data import Data
+from data.data import Data, AugmentedData
 
 
 class Execution:
@@ -10,13 +10,23 @@ class Execution:
         self.epochs = epochs
 
     def run(self, callbacks=None):
-        self.model.fit(self.data.training_x,
-                       self.data.training_y,
-                       self.batch_size,
-                       self.epochs,
-                       callbacks,
-                       self.data.validation_x,
-                       self.data.validation_y)
+        if self.data is AugmentedData:
+            self.model.fit_generator(self.data.training_x,
+                                     self.data.training_y,
+                                     self.batch_size,
+                                     self.epochs,
+                                     callbacks,
+                                     self.data.validation_x,
+                                     self.data.validation_y,
+                                     self.data.get_generator())
+        else:
+            self.model.fit(self.data.training_x,
+                           self.data.training_y,
+                           self.batch_size,
+                           self.epochs,
+                           callbacks,
+                           self.data.validation_x,
+                           self.data.validation_y)
 
     def evaluate(self):
         return self.model.evaluate(self.data.validation_x,

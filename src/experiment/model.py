@@ -1,4 +1,5 @@
 from tensorflow import keras
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 
 class ExperimentModel:
@@ -14,6 +15,14 @@ class ExperimentModel:
                        callbacks=callbacks,
                        validation_data=(val_x, val_y),
                        verbose=0)
+
+    def fit_generator(self, x, y, batch_size, epochs, callbacks, val_x, val_y, generator: ImageDataGenerator):
+        self.model.fit_generator(generator.flow(x, y, batch_size=batch_size),
+                                 steps_per_epoch=len(x) / batch_size,
+                                 epochs=epochs,
+                                 callbacks=callbacks,
+                                 validation_data=generator.flow(val_x, val_y, batch_size=batch_size),
+                                 validation_steps=len(val_x) / batch_size)
 
     def evaluate(self, x, y, batch_size):
         return self.model.evaluate(x, y, batch_size=batch_size)

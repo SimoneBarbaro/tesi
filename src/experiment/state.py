@@ -3,7 +3,6 @@ from experiment.model import ModelFactory
 from sklearn.model_selection import KFold
 
 
-
 class BlankState:
     def __init__(self, state_info, info_name, state_number=0):
         self._state_info = state_info
@@ -70,15 +69,19 @@ class ExperimentState(StateDecorator):
     def __init__(self, config: Config, state_number=0, state: BlankState = None):
         super(ExperimentState, self).__init__(config.preprocessing, "preprocessing",
                                               state_number=state_number,
-                                              state=BlankState(config.batch_sizes, "batch_size") if state is None
+                                              state=StateDecorator(config.augmentation, "augmentation",
+                                                                   state=BlankState(config.batch_sizes, "batch_size"))
+                                              if state is None
                                               else state)
         self.config = config
         self.preprocessing = self.get_info()["preprocessing"]
+        self.augmentation = self.get_info()["augmentation"]
         self.batch_size = self.get_info()["batch_size"]
 
     def next_data(self):
         for fold in range(self.config.num_folds):
-            yield self.config.data_factory.build_data(fold, self.preprocessing)
+            yield self.config.data_factory.build_data(fold,
+                                                      preprocessing=self.preprocessing, augmentation=self.augmentation)
 
     def create_model(self):
         return ModelFactory.create_model(self.config.model_name, self.config.dataset.input_shape,
@@ -96,7 +99,8 @@ class CVState(ExperimentState):
 
     def next_data(self):
         for train_index, test_index, in self.kfold.split(range(self.config.dataset.dim1)):  # TODO better way to do this
-            yield self.config.data_factory.build_data(train_index=train_index, test_index=test_index)
+            yield self.config.data_factory.build_data(train_index=train_index, test_index=test_index,
+                                                      preprocessing=self.preprocessing, augmentation=self.augmentation)
 
     def _create_next(self, next_state, next_inner_state):
         return CVState(self.config, next_state, next_inner_state, self.random_state)

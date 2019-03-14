@@ -4,5 +4,6 @@
   "batch_sizes": [32, 64],
   "epochs": [1],
   "metrics": ["accuracy"],
-  "preprocessing": [null]
+  "preprocessing": [null],
+  "augmentation": [null]
 }

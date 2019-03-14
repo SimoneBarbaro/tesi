@@ -1,6 +1,6 @@
 from data.dataset import Dataset
 import numpy as np
-
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 class Data:
     def __init__(self, dataset: Dataset):
@@ -109,12 +109,56 @@ class TiledData(PreprocessedData):
         self.testing_x = np.tile(self.testing_x, (1, num_tiles, num_tiles, 1))
 
 
+class AugmentedData(PreprocessedData):
+    def __init__(self, dataset: Dataset, data: Data, generator: ImageDataGenerator):
+        super(AugmentedData, self).__init__(dataset, data)
+        self.generator = generator
+
+    def get_generator(self)-> ImageDataGenerator:
+            return self.generator
+
+
+class DataAugmentationBuilder:
+    def __init__(self):
+        self.__generator = ImageDataGenerator()
+
+    def set_feature_standardization(self):
+        self.__generator.featurewise_center = True
+        self.__generator.featurewise_std_normalization = True
+
+    def set_zca_whitening(self):
+        self.__generator.zca_whitening = True
+
+    def set_rotation(self, rotation=90):
+        self.__generator.rotation_range = rotation
+
+    def set_shift(self, shift=0.2):
+        self.__generator.width_shift_range = shift
+        self.__generator.height_shift_range = shift
+
+    def set_flip(self, horizontal=True, vertical=True):
+        self.__generator.horizontal_flip = horizontal
+        self.__generator.vertical_flip = vertical
+
+    def set_zoom(self, zoom=0.2):
+        self.__generator.zoom_range = zoom
+
+    def set_fill(self, fill_mode="reflect"):
+        self.__generator.fill_mode = fill_mode
+
+    def set_rescale(self, rescale=2):
+        self.__generator.rescale = rescale
+
+    def build(self):
+        return  self.__generator
+
+
 class DataFactory:
     def __init__(self, datasset: Dataset):
         self.dataset = datasset
 
     def build_data(self, validation_fold=0, train_index=None, test_index=None,
-                   preprocessing=None, **preprocessing_args):
+                   preprocessing=None, augmentation=None, **preprocessing_args):
         if train_index is None or test_index is None:
             result = OneFoldData(self.dataset, validation_fold)
         else:
@@ -123,4 +167,24 @@ class DataFactory:
             result = PaddedData(self.dataset, result, preprocessing_args.get("num_tiles", 1))
         elif preprocessing == "tiling":
             result = TiledData(self.dataset, result, preprocessing_args.get("num_tiles", 1))
+        if augmentation is not None:
+            builder = DataAugmentationBuilder()
+            for aug in augmentation:
+                if aug == "feature_standardization":
+                    builder.set_feature_standardization()
+                elif aug == "zca_whitening":
+                    builder.set_zca_whitening()
+                elif aug == "rotation":
+                    builder.set_rotation()
+                elif aug == "shift":
+                    builder.set_shift()
+                elif aug == "flip":
+                    builder.set_flip()
+                elif aug == "zoom":
+                    builder.set_zoom()
+                elif aug == "fill":
+                    builder.set_fill()
+                elif aug == "rescale":
+                    builder.set_rescale()
+            result = AugmentedData(self.dataset, result, builder.build())
         return result
