@@ -12,5 +12,5 @@ class Config:
         self.epochs = confing_data["epochs"]
         self.max_epochs = max(self.epochs)
         self.metrics = confing_data["metrics"]
-        self.preprocessing = confing_data["preprocessing"]
-        self.augmentation = confing_data["augmentation"]
+        self.preprocessing = confing_data.get("preprocessing", [None])
+        self.augmentation = confing_data.get("augmentation", [None])
