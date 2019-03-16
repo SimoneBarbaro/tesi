@@ -2,9 +2,10 @@ from data.dataset import Dataset
 import numpy as np
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
+
 class Data:
     def __init__(self, dataset: Dataset):
-        self.input_shape = dataset.input_shape
+        # self.input_shape = dataset.input_shape
         self.num_classes = dataset.num_classes
         self.training_x = []
         self.training_y = []
@@ -12,6 +13,10 @@ class Data:
         self.validation_y = []
         self.testing_x = []
         self.testing_y = []
+
+    @property
+    def input_shape(self):
+        return self.training_x.shape[1:]
 
     def _wrap_data(self):
         self.training_x = np.array(self.training_x)
@@ -86,7 +91,7 @@ class PaddedData(PreprocessedData):
         super(PaddedData, self).__init__(dataset, data)
 
         new_width = self.input_shape[0] + num_tiles
-        self.input_shape = (new_width, new_width, self.input_shape[2])
+        # self.input_shape = (new_width, new_width, self.input_shape[2])
         padding_l = int((new_width - dataset.images_width) / 2)
         padding_r = int((new_width - dataset.images_width + 1) / 2)
         self.training_x = np.pad(self.training_x,
@@ -103,7 +108,7 @@ class PaddedData(PreprocessedData):
 class TiledData(PreprocessedData):
     def __init__(self, dataset: Dataset, data: Data, num_tiles=1):
         super(TiledData, self).__init__(dataset, data)
-        self.input_shape = (self.input_shape[0] * num_tiles, self.input_shape[1] * num_tiles, self.input_shape[2])
+        # self.input_shape = (self.input_shape[0] * num_tiles, self.input_shape[1] * num_tiles, self.input_shape[2])
         self.training_x = np.tile(self.training_x, (1, num_tiles, num_tiles, 1))
         self.validation_x = np.tile(self.validation_x, (1, num_tiles, num_tiles, 1))
         self.testing_x = np.tile(self.testing_x, (1, num_tiles, num_tiles, 1))

@@ -5,6 +5,7 @@ from experiment.configs import Config
 import numpy as np
 from tensorflow import keras
 import os
+import json
 
 
 class CheckProgressCallback(keras.callbacks.Callback):
@@ -35,6 +36,7 @@ class Experiment:
             self.callbacks.append(keras.callbacks.TensorBoard(log_dir=log_dir))
 
     def resume(self):
+        self.output_file.write("[")
         while self.state.is_valid_state():
             evals = [[] for _ in range(len(self.config.epochs))]
             f = 0
@@ -49,11 +51,20 @@ class Experiment:
                     self.callbacks[1] = keras.callbacks.TensorBoard(log_dir=log_dir)
                 execution.run(self.callbacks)
                 f += 1
+            dic = self.state.get_info().copy()
             for i, ev in enumerate(evals):
+                dic["epochs"] = self.config.epochs[i]
+                dic["result"] = merge_results(["loss"] + self.config.metrics, ev)
+                self.output_file.write(json.dumps(dic))
+                if i < len(evals) - 1 or self.state.next().is_valid_state():
+                    self.output_file.write(", ")
+                """
                 self.output_file.write(
                     str(self.state.get_info()) + " " + "{epochs: " + str(self.config.epochs[i]) + "} " +
                     str(merge_results(["loss"] + self.config.metrics, ev)) + "\n")
+                """
             self.state = self.state.next()
+        self.output_file.write("]")
 
 
 def merge_results(metrics, results):

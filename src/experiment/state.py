@@ -77,15 +77,18 @@ class ExperimentState(StateDecorator):
         self.preprocessing = self.get_info()["preprocessing"]
         self.augmentation = self.get_info()["augmentation"]
         self.batch_size = self.get_info()["batch_size"]
+        self._data = None
 
     def next_data(self):
         for fold in range(self.config.num_folds):
-            yield self.config.data_factory.build_data(fold,
-                                                      preprocessing=self.preprocessing, augmentation=self.augmentation)
+            self._data = self.config.data_factory.build_data(fold,
+                                                             preprocessing=self.preprocessing,
+                                                             augmentation=self.augmentation)
+            yield self._data
 
     def create_model(self):
-        return ModelFactory.create_model(self.config.model_name, self.config.dataset.input_shape,
-                                         self.config.dataset.num_classes, self.config.metrics)
+        return ModelFactory.create_model(self.config.model_name, self._data.input_shape,
+                                         self._data.num_classes, self.config.metrics)
 
     def _create_next(self, next_state, next_inner_state):
         return ExperimentState(self.config, next_state, next_inner_state)
@@ -99,8 +102,11 @@ class CVState(ExperimentState):
 
     def next_data(self):
         for train_index, test_index, in self.kfold.split(range(self.config.dataset.dim1)):  # TODO better way to do this
-            yield self.config.data_factory.build_data(train_index=train_index, test_index=test_index,
-                                                      preprocessing=self.preprocessing, augmentation=self.augmentation)
+            self._data = self.config.data_factory.build_data(train_index=train_index,
+                                                             test_index=test_index,
+                                                             preprocessing=self.preprocessing,
+                                                             augmentation=self.augmentation)
+            yield self._data
 
     def _create_next(self, next_state, next_inner_state):
         return CVState(self.config, next_state, next_inner_state, self.random_state)
