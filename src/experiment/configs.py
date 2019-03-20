@@ -8,7 +8,7 @@ class Config:
         self.dataset = Dataset(confing_data["dataset"])
         self.num_folds = len(self.dataset.folds)
         self.protocol = SklearnProtocol(self.num_folds, self.dataset.dim1)
-        self.data_factory = DataFactory(self.dataset, self.protocol)
+        self.data_factory = DataFactory(self.dataset)
         self.model_name = confing_data["model"]
         self.batch_sizes = confing_data["batch_sizes"]
         self.epochs = confing_data["epochs"]

@@ -1,6 +1,5 @@
 from experiment.configs import Config
 from experiment.model import ModelFactory
-from sklearn.model_selection import KFold
 
 
 class BlankState:
@@ -80,9 +79,9 @@ class ExperimentState(StateDecorator):
         self._data = None
 
     def next_data(self):
-        for fold in range(self.config.num_folds):
+        for train_index, test_index, in self.config.protocol.folds:
 
-            self._data = self.config.data_factory.build_data(fold,
+            self._data = self.config.data_factory.build_data(train_index, test_index,
                                                              preprocessing=self.preprocessing,
                                                              augmentation=self.augmentation)
             yield self._data

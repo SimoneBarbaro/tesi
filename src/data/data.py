@@ -1,7 +1,6 @@
 from data.dataset import Dataset
 import numpy as np
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from data.protocol import Protocol
 
 
 class Data:
@@ -159,16 +158,14 @@ class DataAugmentationBuilder:
         self.__generator.rescale = rescale
 
     def build(self):
-        return  self.__generator
+        return self.__generator
 
 
 class DataFactory:
-    def __init__(self, dataset: Dataset, protocol: Protocol):
+    def __init__(self, dataset: Dataset):
         self.dataset = dataset
-        self.protocol = protocol
 
-    def build_data(self, validation_fold=0, preprocessing=None, augmentation=None, **preprocessing_args):
-        train_index, test_index = self.protocol.folds[validation_fold]
+    def build_data(self, train_index, test_index, preprocessing=None, augmentation=None, **preprocessing_args):
         result = CVData(self.dataset, train_index, test_index)
         if preprocessing == "padding":
             result = PaddedData(self.dataset, result, preprocessing_args.get("num_tiles", 1))
