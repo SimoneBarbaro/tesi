@@ -1,6 +1,7 @@
 from data.dataset import Dataset
 import numpy as np
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from data.protocol import Protocol
 
 
 class Data:
@@ -26,6 +27,7 @@ class Data:
         self.testing_x = np.array(self.testing_x)
         self.testing_y = np.array(self.testing_y)
 
+    # TODO dataset fold should be changed
     def _split_train_test(self, dataset, fold):
         for i in dataset.folds[fold][0:dataset.dim1]:
             self.training_x.append(dataset.imgs[i - 1])
@@ -35,6 +37,7 @@ class Data:
             self.testing_y.append(dataset.labels[i - 1])
 
 
+"""
 class OneFoldData(Data):
     def __init__(self, dataset: Dataset, val_fold):
         super(OneFoldData, self).__init__(dataset)
@@ -62,11 +65,12 @@ class CVData(Data):
                 self.testing_x.append(dataset.imgs[i - 1])
                 self.testing_y.append(dataset.labels[i - 1])
         self._wrap_data()
+"""
 
 
-class SklearnCVData(Data):
+class CVData(Data):
     def __init__(self, dataset: Dataset, train_index, val_index):
-        super(SklearnCVData, self).__init__(dataset)
+        super(CVData, self).__init__(dataset)
         self._split_train_test(dataset, 0)
         self._wrap_data()
         self.validation_x = self.training_x[val_index]
@@ -159,15 +163,13 @@ class DataAugmentationBuilder:
 
 
 class DataFactory:
-    def __init__(self, datasset: Dataset):
-        self.dataset = datasset
+    def __init__(self, dataset: Dataset, protocol: Protocol):
+        self.dataset = dataset
+        self.protocol = protocol
 
-    def build_data(self, validation_fold=0, train_index=None, test_index=None,
-                   preprocessing=None, augmentation=None, **preprocessing_args):
-        if train_index is None or test_index is None:
-            result = OneFoldData(self.dataset, validation_fold)
-        else:
-            result = SklearnCVData(self.dataset, train_index, test_index)
+    def build_data(self, validation_fold=0, preprocessing=None, augmentation=None, **preprocessing_args):
+        train_index, test_index = self.protocol.folds[validation_fold]
+        result = CVData(self.dataset, train_index, test_index)
         if preprocessing == "padding":
             result = PaddedData(self.dataset, result, preprocessing_args.get("num_tiles", 1))
         elif preprocessing == "tiling":

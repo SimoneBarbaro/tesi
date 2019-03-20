@@ -1,6 +1,5 @@
 from experiment.execution import Execution
-# from experiment.state import ExperimentState
-from experiment.state import CVState
+from experiment.state import ExperimentState
 from experiment.configs import Config
 import numpy as np
 from tensorflow import keras
@@ -26,8 +25,7 @@ class Experiment:
 
     def __init__(self, confing: Config, output_file, log_dir=None):
         self.config = confing
-        # self.state = ExperimentState(self.config)
-        self.state = CVState(self.config)
+        self.state = ExperimentState(self.config)
         self.output_file = output_file
         self.log_dir = log_dir
         self.callbacks = []

@@ -13,6 +13,7 @@ class Dataset:
         self.num_classes = max(self.labels)
         for i in range(0, len(self.labels)):
             self.labels[i] = self.labels[i] - 1
+        # TODO change folds
         self.folds = data[0, 2]
         self.dim1 = data[0, 3][0][0]
         self.dim2 = data[0, 4][0][0]

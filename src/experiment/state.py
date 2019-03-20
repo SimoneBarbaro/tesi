@@ -81,6 +81,7 @@ class ExperimentState(StateDecorator):
 
     def next_data(self):
         for fold in range(self.config.num_folds):
+
             self._data = self.config.data_factory.build_data(fold,
                                                              preprocessing=self.preprocessing,
                                                              augmentation=self.augmentation)
@@ -94,6 +95,7 @@ class ExperimentState(StateDecorator):
         return ExperimentState(self.config, next_state, next_inner_state)
 
 
+"""
 class CVState(ExperimentState):
     def __init__(self, config: Config, state_number=0, state: BlankState = None, random_state=1):
         super(CVState, self).__init__(config, state_number, state)
@@ -101,7 +103,7 @@ class CVState(ExperimentState):
         self.kfold = KFold(config.num_folds, True, self.random_state)
 
     def next_data(self):
-        for train_index, test_index, in self.kfold.split(range(self.config.dataset.dim1)):  # TODO better way to do this
+        for train_index, test_index, in self.kfold.split(range(self.config.dataset.dim1)):
             self._data = self.config.data_factory.build_data(train_index=train_index,
                                                              test_index=test_index,
                                                              preprocessing=self.preprocessing,
@@ -110,3 +112,4 @@ class CVState(ExperimentState):
 
     def _create_next(self, next_state, next_inner_state):
         return CVState(self.config, next_state, next_inner_state, self.random_state)
+"""
