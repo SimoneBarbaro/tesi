@@ -79,7 +79,7 @@ class ExperimentState(StateDecorator):
         self._data = None
 
     def next_data(self):
-        for train_index, test_index, in self.config.protocol.folds:
+        for train_index, test_index in self.config.protocol.folds:
 
             self._data = self.config.data_factory.build_data(train_index, test_index,
                                                              preprocessing=self.preprocessing,
