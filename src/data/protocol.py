@@ -9,7 +9,11 @@ class Protocol:
         raise NotImplementedError
 
     def save_folds(self, file_name):
-        sio.savemat(file_name, {"data": self.folds})
+        data = [[], []]
+        for train_index, test_index in self.folds:
+            data[0].append(train_index)
+            data[1].append(test_index)
+        sio.savemat(file_name, {"data": data})
 
 
 class PreCalculatedProtocol(Protocol):

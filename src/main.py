@@ -20,6 +20,9 @@ if __name__ == "__main__":
     with open(os.path.join(os.path.dirname(__file__), os.pardir, 'config', config_file)) as f:
         config_data = json.load(f)
     config = Config(config_data)
+
+    # config.protocol.save_folds("folds.mat")
+
     Experiment(config, file, log_dir).resume()
 
     if file is not sys.stdin:
