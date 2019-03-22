@@ -67,6 +67,14 @@ class Resnet50(CompletedModel):
                                        input_shape, num_classes, metrics, freeze)
 
 
+class Densenet121(CompletedModel):
+    def __init__(self, input_shape, num_classes, metrics, freeze=False):
+        super(Densenet121, self).__init__(keras.applications.DenseNet121(weights='imagenet',
+                                                                         include_top=False,
+                                                                         input_shape=input_shape),
+                                          input_shape, num_classes, metrics, freeze)
+
+
 class ModelFactory:
 
     @staticmethod
@@ -75,6 +83,10 @@ class ModelFactory:
             return Resnet50(input_shape, num_classes, metrics)
         elif name == "frozen_resnet":
             return Resnet50(input_shape, num_classes, metrics, True)
+        elif name == "densenet":
+            return Densenet121(input_shape, num_classes, metrics)
+        elif name == "densenet_resnet":
+            return Densenet121(input_shape, num_classes, metrics, True)
         elif name == "test":
             return TestModel(input_shape, num_classes, metrics)
         return None
