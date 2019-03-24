@@ -1,4 +1,5 @@
 from data.dataset import Dataset
+import matplotlib
 import numpy as np
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
@@ -117,6 +118,19 @@ class TiledData(PreprocessedData):
         self.testing_x = np.tile(self.testing_x, (1, num_tiles, num_tiles, 1))
 
 
+class HSVData(PreprocessedData):
+    def __init__(self, dataset: Dataset, data: Data):
+        super(HSVData, self).__init__(dataset, data)
+        self.training_x = self.__change_color(self.training_x)
+        self.validation_x = self.__change_color(self.validation_x)
+        self.testing_x = self.__change_color(self.testing_x)
+
+    @staticmethod
+    def __change_color(x):
+        result = np.array(list(map(lambda p: p / 255.0, x)))
+        return matplotlib.colors.rgb_to_hsv(result)
+
+
 class AugmentedData(PreprocessedData):
     def __init__(self, dataset: Dataset, data: Data, generator: ImageDataGenerator):
         super(AugmentedData, self).__init__(dataset, data)
@@ -171,6 +185,8 @@ class DataFactory:
             result = PaddedData(self.dataset, result, preprocessing_args.get("num_tiles", 1))
         elif preprocessing == "tiling":
             result = TiledData(self.dataset, result, preprocessing_args.get("num_tiles", 1))
+        elif preprocessing == "hsv":
+            result = HSVData(self.dataset, result)
         if augmentation is not None:
             builder = DataAugmentationBuilder()
             for aug in augmentation:
