@@ -2,8 +2,8 @@
   "dataset": "EILAT_data.mat",
   "model": "densenet",
   "batch_sizes": [64],
-  "epochs": [30, 50],
+  "epochs": [30],
   "metrics": ["accuracy"],
-  "preprocessing": [null],
-  "augmentation": [null, ["feature_standardization"], ["zca_whitening"], ["rotation", "shift"], ["zoom"], ["zoom", "rotation", "shift"]]
+  "preprocessing": [null, "hsv"],
+  "augmentation": [null]
 }
