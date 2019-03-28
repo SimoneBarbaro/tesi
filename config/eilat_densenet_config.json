@@ -4,6 +4,6 @@
   "batch_sizes": [64],
   "epochs": [30],
   "metrics": ["accuracy"],
-  "preprocessing": [null, "hsv"],
+  "preprocessing": [null, "hsv", "lbp"],
   "augmentation": [null]
 }

@@ -2,6 +2,15 @@ from data.dataset import Dataset
 import matplotlib
 import numpy as np
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
+import cv2
+import os
+from skimage.feature import local_binary_pattern
+import scipy.misc
+from PIL import Image
+import requests
+from io import BytesIO
+import matplotlib.pyplot as plt
+
 
 
 class Data:
@@ -131,6 +140,24 @@ class HSVData(PreprocessedData):
         return matplotlib.colors.rgb_to_hsv(result)
 
 
+class LBPData(PreprocessedData):
+    # TODO default parameters
+    def __init__(self, dataset: Dataset, data: Data, n_points=24, radius=3):
+        super(LBPData, self).__init__(dataset, data)
+        self.__n_points = n_points
+        self.__radius = radius
+        self.training_x = np.array(list(map(self.__extract_lbp, self.training_x)))
+        self.validation_x = np.array(list(map(self.__extract_lbp, self.validation_x)))
+        self.testing_x = np.array(list(map(self.__extract_lbp, self.testing_x)))
+
+    def __extract_lbp(self, image):
+        b, g, r = cv2.split(image)
+        b1 = local_binary_pattern(b, self.__n_points, self.__radius, method='uniform')
+        g1 = local_binary_pattern(g, self.__n_points, self.__radius, method='uniform')
+        r1 = local_binary_pattern(r, self.__n_points, self.__radius, method='uniform')
+        return cv2.merge([b1, g1, r1])
+
+
 class AugmentedData(PreprocessedData):
     def __init__(self, dataset: Dataset, data: Data, generator: ImageDataGenerator):
         super(AugmentedData, self).__init__(dataset, data)
@@ -187,6 +214,8 @@ class DataFactory:
             result = TiledData(self.dataset, result, preprocessing_args.get("num_tiles", 1))
         elif preprocessing == "hsv":
             result = HSVData(self.dataset, result)
+        elif preprocessing == "lbp":
+            result = LBPData(self.dataset, result)  # TODO parameters
         if augmentation is not None:
             builder = DataAugmentationBuilder()
             for aug in augmentation:
