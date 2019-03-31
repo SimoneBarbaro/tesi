@@ -3,19 +3,13 @@ import matplotlib
 import numpy as np
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import cv2
-import os
+import skimage
 from skimage.feature import local_binary_pattern
-import scipy.misc
-from PIL import Image
-import requests
-from io import BytesIO
-import matplotlib.pyplot as plt
 
 
 
 class Data:
     def __init__(self, dataset: Dataset):
-        # self.input_shape = dataset.input_shape
         self.num_classes = dataset.num_classes
         self.training_x = []
         self.training_y = []
@@ -44,37 +38,6 @@ class Data:
         for i in dataset.folds[fold][dataset.dim1:dataset.dim2]:
             self.testing_x.append(dataset.imgs[i - 1])
             self.testing_y.append(dataset.labels[i - 1])
-
-
-"""
-class OneFoldData(Data):
-    def __init__(self, dataset: Dataset, val_fold):
-        super(OneFoldData, self).__init__(dataset)
-
-        self._split_train_test(dataset, val_fold)
-        self.validation_x = self.testing_x
-        self.validation_y = self.testing_y
-        self._wrap_data()
-
-
-class CVData(Data):
-    def __init__(self, dataset: Dataset, val_fold):
-        super(CVData, self).__init__(dataset)
-
-        for fold in range(0, len(dataset.folds)):
-            tmp_x = self.training_x
-            tmp_y = self.training_y
-            if fold == val_fold:
-                tmp_x = self.validation_x
-                tmp_y = self.validation_y
-            for i in dataset.folds[fold][0:dataset.dim1]:
-                tmp_x.append(dataset.imgs[i - 1])
-                tmp_y.append(dataset.labels[i - 1])
-            for i in dataset.folds[fold][dataset.dim1:dataset.dim2]:
-                self.testing_x.append(dataset.imgs[i - 1])
-                self.testing_y.append(dataset.labels[i - 1])
-        self._wrap_data()
-"""
 
 
 class CVData(Data):
@@ -144,17 +107,28 @@ class LBPData(PreprocessedData):
     # TODO default parameters
     def __init__(self, dataset: Dataset, data: Data, n_points=24, radius=3):
         super(LBPData, self).__init__(dataset, data)
-        self.__n_points = n_points
-        self.__radius = radius
-        self.training_x = np.array(list(map(self.__extract_lbp, self.training_x)))
-        self.validation_x = np.array(list(map(self.__extract_lbp, self.validation_x)))
-        self.testing_x = np.array(list(map(self.__extract_lbp, self.testing_x)))
+        self._n_points = n_points
+        self._radius = radius
+        self.training_x = np.array(list(map(self._extract_lbp, self.training_x)))
+        self.validation_x = np.array(list(map(self._extract_lbp, self.validation_x)))
+        self.testing_x = np.array(list(map(self._extract_lbp, self.testing_x)))
 
-    def __extract_lbp(self, image):
+    def _extract_lbp(self, image):
+        raise NotImplementedError
+
+
+class GreyLBPData(LBPData):
+    def _extract_lbp(self, image):
+        return local_binary_pattern(skimage.color.rgb2gray(image), self._n_points, self._radius, method='uniform')
+
+
+class RgbLBPData(LBPData):
+
+    def _extract_lbp(self, image):
         b, g, r = cv2.split(image)
-        b1 = local_binary_pattern(b, self.__n_points, self.__radius, method='uniform')
-        g1 = local_binary_pattern(g, self.__n_points, self.__radius, method='uniform')
-        r1 = local_binary_pattern(r, self.__n_points, self.__radius, method='uniform')
+        b1 = local_binary_pattern(b, self._n_points, self._radius, method='uniform')
+        g1 = local_binary_pattern(g, self._n_points, self._radius, method='uniform')
+        r1 = local_binary_pattern(r, self._n_points, self._radius, method='uniform')
         return cv2.merge([b1, g1, r1])
 
 
@@ -163,7 +137,7 @@ class AugmentedData(PreprocessedData):
         super(AugmentedData, self).__init__(dataset, data)
         self.generator = generator
 
-    def get_generator(self)-> ImageDataGenerator:
+    def get_generator(self) -> ImageDataGenerator:
             return self.generator
 
 
@@ -214,8 +188,10 @@ class DataFactory:
             result = TiledData(self.dataset, result, preprocessing_args.get("num_tiles", 1))
         elif preprocessing == "hsv":
             result = HSVData(self.dataset, result)
-        elif preprocessing == "lbp":
-            result = LBPData(self.dataset, result)  # TODO parameters
+        elif preprocessing == "grey_lbp":
+            result = GreyLBPData(self.dataset, result)  # TODO parameters
+        elif preprocessing == "rgb_lbp":
+            result = RgbLBPData(self.dataset, result)  # TODO parameters
         if augmentation is not None:
             builder = DataAugmentationBuilder()
             for aug in augmentation:
