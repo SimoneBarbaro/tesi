@@ -7,7 +7,6 @@ import skimage
 from skimage.feature import local_binary_pattern
 
 
-
 class Data:
     def __init__(self, dataset: Dataset):
         self.num_classes = dataset.num_classes
@@ -117,11 +116,6 @@ class LBPData(PreprocessedData):
         raise NotImplementedError
 
 
-class GreyLBPData(LBPData):
-    def _extract_lbp(self, image):
-        return local_binary_pattern(skimage.color.rgb2gray(image), self._n_points, self._radius, method='uniform')
-
-
 class RgbLBPData(LBPData):
 
     def _extract_lbp(self, image):
@@ -188,8 +182,6 @@ class DataFactory:
             result = TiledData(self.dataset, result, preprocessing_args.get("num_tiles", 1))
         elif preprocessing == "hsv":
             result = HSVData(self.dataset, result)
-        elif preprocessing == "grey_lbp":
-            result = GreyLBPData(self.dataset, result)  # TODO parameters
         elif preprocessing == "rgb_lbp":
             result = RgbLBPData(self.dataset, result)  # TODO parameters
         if augmentation is not None:
