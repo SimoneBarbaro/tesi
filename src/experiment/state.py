@@ -88,7 +88,8 @@ class ExperimentState(StateDecorator):
 
     def create_model(self):
         return ModelFactory.create_model(self.config.model_name, self._data.input_shape,
-                                         self._data.num_classes, self.config.metrics)
+                                         self._data.num_classes, self.config.metrics,
+                                         self.config.freeze_model, self.config.model_pretraining)
 
     def _create_next(self, next_state, next_inner_state):
         return ExperimentState(self.config, next_state, next_inner_state)

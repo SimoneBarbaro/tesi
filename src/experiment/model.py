@@ -60,16 +60,16 @@ class CompletedModel(ExperimentModel):
 
 
 class Resnet50(CompletedModel):
-    def __init__(self, input_shape, num_classes, metrics, freeze=False):
-        super(Resnet50, self).__init__(keras.applications.ResNet50(weights='imagenet',
+    def __init__(self, input_shape, num_classes, metrics, freeze=False, pretraining="imagenet"):
+        super(Resnet50, self).__init__(keras.applications.ResNet50(weights=pretraining,
                                                                    include_top=False,
                                                                    input_shape=input_shape),
                                        input_shape, num_classes, metrics, freeze)
 
 
 class Densenet121(CompletedModel):
-    def __init__(self, input_shape, num_classes, metrics, freeze=False):
-        super(Densenet121, self).__init__(keras.applications.DenseNet121(weights='imagenet',
+    def __init__(self, input_shape, num_classes, metrics, freeze=False, pretraining="imagenet"):
+        super(Densenet121, self).__init__(keras.applications.DenseNet121(weights='pretraining',
                                                                          include_top=False,
                                                                          input_shape=input_shape),
                                           input_shape, num_classes, metrics, freeze)
@@ -78,15 +78,11 @@ class Densenet121(CompletedModel):
 class ModelFactory:
 
     @staticmethod
-    def create_model(name, input_shape, num_classes, metrics):
+    def create_model(name, input_shape, num_classes, metrics, freeze=True, pretraining="imagenet"):
         if name == "resnet":
-            return Resnet50(input_shape, num_classes, metrics)
-        elif name == "frozen_resnet":
-            return Resnet50(input_shape, num_classes, metrics, True)
+            return Resnet50(input_shape, num_classes, metrics, freeze, pretraining)
         elif name == "densenet":
-            return Densenet121(input_shape, num_classes, metrics)
-        elif name == "densenet_resnet":
-            return Densenet121(input_shape, num_classes, metrics, True)
+            return Densenet121(input_shape, num_classes, metrics, freeze, pretraining)
         elif name == "test":
             return TestModel(input_shape, num_classes, metrics)
         return None

@@ -9,7 +9,9 @@ class Config:
         self.num_folds = len(self.dataset.folds)
         self.protocol = SklearnProtocol(self.num_folds, self.dataset.dim1)
         self.data_factory = DataFactory(self.dataset)
-        self.model_name = confing_data["model"]
+        self.model_name = confing_data["model"]["name"]
+        self.freeze_model = confing_data["model"]["freeze"]
+        self.model_pretraining = confing_data["model"]["pretraining"]
         self.batch_sizes = confing_data["batch_sizes"]
         self.epochs = confing_data["epochs"]
         self.max_epochs = max(self.epochs)

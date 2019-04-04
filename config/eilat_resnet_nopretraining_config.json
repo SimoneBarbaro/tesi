@@ -3,7 +3,7 @@
   "model": {
     "name": "resnet",
     "freeze": false,
-    "pretraining": "imagenet"
+    "pretraining": null
   },
   "batch_sizes": [64],
   "epochs": [30],

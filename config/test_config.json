@@ -1,6 +1,10 @@
 {
   "dataset": "EILAT_data.mat",
-  "model": "test",
+  "model": {
+    "name": "test",
+    "freeze": false,
+    "pretraining": null
+  },
   "batch_sizes": [32, 64],
   "epochs": [1, 2, 3],
   "metrics": ["accuracy"],
