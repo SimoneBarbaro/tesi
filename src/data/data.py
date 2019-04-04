@@ -115,9 +115,9 @@ class ChangedImagesData(PreprocessedData):
 
 class RgbLBPData(ChangedImagesData):
     def __init__(self, dataset: Dataset, data: Data, n_points=24, radius=3):
-        super(RgbLBPData, self).__init__(dataset, data)
         self.__n_points = n_points
         self.__radius = radius
+        super(RgbLBPData, self).__init__(dataset, data)
 
     def _change_image(self, image):
         b, g, r = cv2.split(image)
@@ -131,9 +131,9 @@ class WaveletData(ChangedImagesData):
 
     def _change_image(self, image):
         b, g, r = cv2.split(image)
-        b1 = pywt.dwt(b, "db1")
-        g1 = pywt.dwt(g, "db1")
-        r1 = pywt.dwt(r, "db1")
+        _, b1 = pywt.dwt(b, "db1")
+        _, g1 = pywt.dwt(g, "db1")
+        _, r1 = pywt.dwt(r, "db1")
         return cv2.merge([b1, g1, r1])
 
 
