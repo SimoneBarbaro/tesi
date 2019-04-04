@@ -3,7 +3,7 @@ import matplotlib
 import numpy as np
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import cv2
-import skimage
+import pywt
 from skimage.feature import local_binary_pattern
 
 
@@ -102,27 +102,38 @@ class HSVData(PreprocessedData):
         return matplotlib.colors.rgb_to_hsv(result)
 
 
-class LBPData(PreprocessedData):
-    # TODO default parameters
-    def __init__(self, dataset: Dataset, data: Data, n_points=24, radius=3):
-        super(LBPData, self).__init__(dataset, data)
-        self._n_points = n_points
-        self._radius = radius
-        self.training_x = np.array(list(map(self._extract_lbp, self.training_x)))
-        self.validation_x = np.array(list(map(self._extract_lbp, self.validation_x)))
-        self.testing_x = np.array(list(map(self._extract_lbp, self.testing_x)))
+class ChangedImagesData(PreprocessedData):
+    def __init__(self, dataset: Dataset, data: Data):
+        super(ChangedImagesData, self).__init__(dataset, data)
+        self.training_x = np.array(list(map(self._change_image, self.training_x)))
+        self.validation_x = np.array(list(map(self._change_image, self.validation_x)))
+        self.testing_x = np.array(list(map(self._change_image, self.testing_x)))
 
-    def _extract_lbp(self, image):
+    def _change_image(self, image):
         raise NotImplementedError
 
 
-class RgbLBPData(LBPData):
+class RgbLBPData(ChangedImagesData):
+    def __init__(self, dataset: Dataset, data: Data, n_points=24, radius=3):
+        super(RgbLBPData, self).__init__(dataset, data)
+        self.__n_points = n_points
+        self.__radius = radius
 
-    def _extract_lbp(self, image):
+    def _change_image(self, image):
         b, g, r = cv2.split(image)
-        b1 = local_binary_pattern(b, self._n_points, self._radius, method='uniform')
-        g1 = local_binary_pattern(g, self._n_points, self._radius, method='uniform')
-        r1 = local_binary_pattern(r, self._n_points, self._radius, method='uniform')
+        b1 = local_binary_pattern(b, self.__n_points, self.__radius, method='uniform')
+        g1 = local_binary_pattern(g, self.__n_points, self.__radius, method='uniform')
+        r1 = local_binary_pattern(r, self.__n_points, self.__radius, method='uniform')
+        return cv2.merge([b1, g1, r1])
+
+
+class WaveletData(ChangedImagesData):
+
+    def _change_image(self, image):
+        b, g, r = cv2.split(image)
+        b1 = pywt.dwt(b, "db1")
+        g1 = pywt.dwt(g, "db1")
+        r1 = pywt.dwt(r, "db1")
         return cv2.merge([b1, g1, r1])
 
 
@@ -184,6 +195,8 @@ class DataFactory:
             result = HSVData(self.dataset, result)
         elif preprocessing == "rgb_lbp":
             result = RgbLBPData(self.dataset, result)  # TODO parameters
+        elif preprocessing == "wavelet":
+            result = WaveletData(self.dataset, result)
         if augmentation is not None:
             builder = DataAugmentationBuilder()
             for aug in augmentation:
