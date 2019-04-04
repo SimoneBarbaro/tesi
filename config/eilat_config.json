@@ -8,6 +8,6 @@
   "batch_sizes": [64],
   "epochs": [30],
   "metrics": ["accuracy"],
-  "preprocessing": [null, "hsv", "grey_lbp", "rgb_lbp"],
+  "preprocessing": [null, "hsv", "rgb_lbp"],
   "augmentation": [null]
 }
