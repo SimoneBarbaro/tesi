@@ -132,7 +132,7 @@ class AugmentedData(PreprocessedData):
         self.generator = generator
 
     def get_generator(self) -> ImageDataGenerator:
-            return self.generator
+        return self.generator
 
 
 class DataAugmentationBuilder:
