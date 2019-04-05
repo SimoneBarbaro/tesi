@@ -8,10 +8,10 @@ if __name__ == "__main__":
     log_dir = None
     start_state = 0
     if len(sys.argv) > 1:
-        start_state = sum(1 for line in open(sys.argv[1], 'r'))
-        file = open(sys.argv[1], 'w')
+        file = sys.argv[1]
+        start_state = sum(1 for line in open(file, 'r'))
     else:
-        file = sys.stdout
+        file = "stdout"
     if len(sys.argv) > 2:
         config_file = sys.argv[2] + "_config.json"
     else:
@@ -27,5 +27,3 @@ if __name__ == "__main__":
 
     Experiment(config, file, start_state, log_dir).resume()
 
-    if file is not sys.stdin:
-        file.close()

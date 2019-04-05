@@ -1,3 +1,5 @@
+import sys
+
 from experiment.execution import Execution
 from experiment.state import ExperimentState
 from experiment.configs import Config
@@ -33,6 +35,15 @@ class Experiment:
         if log_dir is not None:
             self.callbacks.append(keras.callbacks.TensorBoard(log_dir=log_dir))
 
+    def __write(self, data):
+        if self.output_file != 'stdout':
+            file = open(self.output_file, 'w')
+        else:
+            file = sys.stdout
+        file.write(str(data) + "\n")
+        if file is not sys.stdin:
+            file.close()
+
     def resume(self):
         # self.output_file.write("[")
         while self.state.is_valid_state():
@@ -58,7 +69,8 @@ class Experiment:
                 if i < len(evals) - 1 or self.state.next().is_valid_state():
                     self.output_file.write(", ")
                 """
-                self.output_file.write(str(dic) + "\n")
+                self.__write(dic)
+                # self.output_file.write(str(dic) + "\n")
                 """
                 self.output_file.write(
                     str(self.state.get_info()) + " " + "{epochs: " + str(self.config.epochs[i]) + "} " +
