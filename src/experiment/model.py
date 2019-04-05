@@ -69,7 +69,7 @@ class Resnet50(CompletedModel):
 
 class Densenet121(CompletedModel):
     def __init__(self, input_shape, num_classes, metrics, freeze=False, pretraining="imagenet"):
-        super(Densenet121, self).__init__(keras.applications.DenseNet121(weights='pretraining',
+        super(Densenet121, self).__init__(keras.applications.DenseNet121(weights=pretraining,
                                                                          include_top=False,
                                                                          input_shape=input_shape),
                                           input_shape, num_classes, metrics, freeze)
