@@ -39,7 +39,7 @@ class StateDecorator(BlankState):
         self.__inner_state = state
 
     def _init_state_number(self, number):
-        self._state_number = number / self.__inner_state.num_states()
+        self._state_number = number // self.__inner_state.num_states()
         self.__inner_state._init_state_number(number % len(self._state_info))
 
     def get_info(self):

@@ -41,7 +41,7 @@ class Experiment:
         else:
             file = sys.stdout
         file.write(str(data) + "\n")
-        if file is not sys.stdin:
+        if file is not sys.stdout:
             file.close()
 
     def resume(self):
