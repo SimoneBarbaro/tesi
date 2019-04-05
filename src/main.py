@@ -6,7 +6,9 @@ from experiment.experiment import Experiment
 
 if __name__ == "__main__":
     log_dir = None
+    start_state = 0
     if len(sys.argv) > 1:
+        start_state = sum(1 for line in open(sys.argv[1], 'r'))
         file = open(sys.argv[1], 'w')
     else:
         file = sys.stdout
@@ -23,7 +25,7 @@ if __name__ == "__main__":
 
     # config.protocol.save_folds("folds.mat")
 
-    Experiment(config, file, log_dir).resume()
+    Experiment(config, file, start_state, log_dir).resume()
 
     if file is not sys.stdin:
         file.close()

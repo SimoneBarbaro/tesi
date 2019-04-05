@@ -11,6 +11,9 @@ class BlankState:
         if self._state_number < len(self._state_info):
             self.__info = self._state_info[self._state_number]
 
+    def _init_state_number(self, number):
+        self._state_number = number
+
     def get_info(self):
         return {self._info_name: self.__info}
 
@@ -34,6 +37,10 @@ class StateDecorator(BlankState):
     def __init__(self, state_info, info_name, state_number=0, state: BlankState = None):
         super(StateDecorator, self).__init__(state_info, info_name, state_number)
         self.__inner_state = state
+
+    def _init_state_number(self, number):
+        self._state_number = number / self.__inner_state.num_states()
+        self.__inner_state._init_state_number(number % len(self._state_info))
 
     def get_info(self):
         return {**super(StateDecorator, self).get_info(), **self.__inner_state.get_info()}
@@ -72,6 +79,7 @@ class ExperimentState(StateDecorator):
                                                                    state=BlankState(config.batch_sizes, "batch_size"))
                                               if state is None
                                               else state)
+        self._init_state_number(state_number)
         self.config = config
         self.preprocessing = self.get_info()["preprocessing"]
         self.augmentation = self.get_info()["augmentation"]
