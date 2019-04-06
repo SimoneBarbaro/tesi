@@ -7,7 +7,7 @@ from experiment.experiment import Experiment
 if __name__ == "__main__":
     log_dir = None
     start_state = 0
-    if len(sys.argv) > 1:
+    if len(sys.argv) > 1 and sys.argv[1] != "None":
         file = sys.argv[1]
         start_state = sum(1 for line in open(file, 'r'))
     else:

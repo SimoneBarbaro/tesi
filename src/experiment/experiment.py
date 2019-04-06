@@ -27,7 +27,8 @@ class Experiment:
 
     def __init__(self, confing: Config, output_file, start_state=0, log_dir=None):
         self.config = confing
-        self.state = ExperimentState(self.config, state_number=start_state)
+        self.state = ExperimentState(self.config)
+        self.state.init_state_number(start_state)
         self.output_file = output_file
         self.log_dir = log_dir
         self.callbacks = []
@@ -37,7 +38,7 @@ class Experiment:
 
     def __write(self, data):
         if self.output_file != 'stdout':
-            file = open(self.output_file, 'w')
+            file = open(self.output_file, 'a')
         else:
             file = sys.stdout
         file.write(str(data) + "\n")
@@ -46,6 +47,7 @@ class Experiment:
 
     def resume(self):
         # self.output_file.write("[")
+        print(self.state.get_state_number())
         while self.state.is_valid_state():
             evals = [[] for _ in range(len(self.config.epochs))]
             f = 0
@@ -77,6 +79,7 @@ class Experiment:
                     str(merge_results(["loss"] + self.config.metrics, ev)) + "\n")
                 """
             self.state = self.state.next()
+            print(self.state.get_state_number())
         # self.output_file.write("]")
 
 
