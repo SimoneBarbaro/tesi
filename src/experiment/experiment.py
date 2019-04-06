@@ -47,7 +47,6 @@ class Experiment:
 
     def resume(self):
         # self.output_file.write("[")
-        print(self.state.get_state_number())
         while self.state.is_valid_state():
             evals = [[] for _ in range(len(self.config.epochs))]
             f = 0
@@ -79,7 +78,6 @@ class Experiment:
                     str(merge_results(["loss"] + self.config.metrics, ev)) + "\n")
                 """
             self.state = self.state.next()
-            print(self.state.get_state_number())
         # self.output_file.write("]")
 
 
