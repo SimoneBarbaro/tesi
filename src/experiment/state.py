@@ -13,6 +13,7 @@ class BlankState:
 
     def init_state_number(self, number):
         self._state_number = number
+        return self.next()
 
     def get_info(self):
         return {self._info_name: self.__info}
@@ -40,7 +41,8 @@ class StateDecorator(BlankState):
 
     def init_state_number(self, number):
         self._state_number = number // self.__inner_state.num_states()
-        self.__inner_state.init_state_number(number % self.__inner_state.num_states())
+        self.__inner_state = self.__inner_state.init_state_number(number % self.__inner_state.num_states())
+        return self.next()
 
     def get_info(self):
         return {**super(StateDecorator, self).get_info(), **self.__inner_state.get_info()}

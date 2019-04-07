@@ -1,0 +1,13 @@
+{
+  "dataset": "EILAT_data.mat",
+  "model": {
+    "name": "test",
+    "freeze": false,
+    "pretraining": null
+  },
+  "batch_sizes": [64],
+  "epochs": [3],
+  "metrics": ["accuracy"],
+  "preprocessing": [null, "hsv", "rgb_lbp", "wavelet"],
+  "augmentation": [null]
+}

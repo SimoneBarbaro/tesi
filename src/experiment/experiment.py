@@ -28,7 +28,7 @@ class Experiment:
     def __init__(self, confing: Config, output_file, start_state=0, log_dir=None):
         self.config = confing
         self.state = ExperimentState(self.config)
-        self.state.init_state_number(start_state)
+        self.state = self.state.init_state_number(start_state - 1)
         self.output_file = output_file
         self.log_dir = log_dir
         self.callbacks = []
