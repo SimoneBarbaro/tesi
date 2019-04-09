@@ -1,12 +1,12 @@
 {
   "dataset": "RSMAS_data.mat",
   "model": {
-    "name": "resnet",
+    "name": "densenet",
     "freeze": false,
     "pretraining": "imagenet"
   },
   "batch_sizes": [64],
-  "epochs": [50],
+  "epochs": [30],
   "metrics": ["accuracy"],
   "preprocessing": [null, "hsv", "rgb_lbp", "wavelet"],
   "augmentation": [null]

@@ -3,10 +3,10 @@
   "model": {
     "name": "resnet",
     "freeze": false,
-    "pretraining": "imagenet"
+    "pretraining": null
   },
   "batch_sizes": [64],
-  "epochs": [50],
+  "epochs": [100],
   "metrics": ["accuracy"],
   "preprocessing": [null, "hsv", "rgb_lbp", "wavelet"],
   "augmentation": [null]
