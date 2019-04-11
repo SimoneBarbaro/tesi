@@ -42,7 +42,7 @@ class Experiment:
                 execution = Execution(model, data, self.state.batch_size, self.config.max_epochs)
                 self.callbacks[0] = CheckProgressCallback(self.config.epochs, evals, execution.evaluate)
                 if self.result_saver.get_log_dir() is not None:
-                    log_dir = os.path.join(self.self.result_saver.get_log_dir(),
+                    log_dir = os.path.join(self.result_saver.get_log_dir(),
                                            str(self.state.get_state_number()) + "_" + str(f))
                     if not os.path.exists(log_dir):
                         os.makedirs(log_dir)
