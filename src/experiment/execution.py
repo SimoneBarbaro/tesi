@@ -12,22 +12,22 @@ class Execution:
 
     def run(self, callbacks=None):
         if self.data is AugmentedData:
-            self.model.fit_generator(self.data.training_x,
-                                     self.data.training_y,
-                                     self.batch_size,
-                                     self.epochs,
-                                     callbacks,
-                                     self.data.validation_x,
-                                     self.data.validation_y,
-                                     self.data.get_generator())
+            return self.model.fit_generator(self.data.training_x,
+                                            self.data.training_y,
+                                            self.batch_size,
+                                            self.epochs,
+                                            callbacks,
+                                            self.data.validation_x,
+                                            self.data.validation_y,
+                                            self.data.get_generator())
         else:
-            self.model.fit(self.data.training_x,
-                           self.data.training_y,
-                           self.batch_size,
-                           self.epochs,
-                           callbacks,
-                           self.data.validation_x,
-                           self.data.validation_y)
+            return self.model.fit(self.data.training_x,
+                                  self.data.training_y,
+                                  self.batch_size,
+                                  self.epochs,
+                                  callbacks,
+                                  self.data.validation_x,
+                                  self.data.validation_y)
 
     def evaluate(self):
         return self.model.evaluate(self.data.validation_x,
