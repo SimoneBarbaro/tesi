@@ -4,7 +4,7 @@ import os
 
 class ResultSaver:
 
-    def __init__(self, run_name, log_dir=None, result_dir=None):
+    def __init__(self, run_name, result_dir=None, log_dir=None):
         if result_dir is None:
             self.__output_file = "stdout"
             self.__model_file = None

@@ -12,7 +12,7 @@ if __name__ == "__main__":
         run_name = sys.argv[1]
     else:
         run_name = "test"
-    if len(sys.argv) > 2 and os.path.isfile(sys.argv[2]):
+    if len(sys.argv) > 2:
         res_dir = sys.argv[2]
     else:
         res_dir = None
@@ -25,5 +25,5 @@ if __name__ == "__main__":
     config = Config(config_data)
 
     # config.protocol.save_folds("folds.mat")
-    Experiment(config, ResultSaver(run_name, log_dir, res_dir)).resume()
+    Experiment(config, ResultSaver(run_name, res_dir, log_dir)).resume()
 
