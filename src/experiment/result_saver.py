@@ -27,3 +27,9 @@ class ResultSaver:
 
     def get_model_file(self):
         return self.__model_file
+
+    def get_num_states_done(self):
+        if os.path.isfile(self.__output_file):
+            return sum(1 for _ in open(self.__output_file, 'r'))
+        else:
+            return 0

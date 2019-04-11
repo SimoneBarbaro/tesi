@@ -23,10 +23,10 @@ class CheckProgressCallback(keras.callbacks.Callback):
 
 class Experiment:
 
-    def __init__(self, confing: Config, saver: ResultSaver, start_state=0):
+    def __init__(self, confing: Config, saver: ResultSaver):
         self.config = confing
         self.state = ExperimentState(self.config)
-        self.state = self.state.init_state_number(start_state - 1)
+        self.state = self.state.init_state_number(saver.get_num_states_done() - 1)
         self.result_saver = saver
         self.callbacks = []
         self.callbacks.append(None)
