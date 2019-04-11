@@ -1,5 +1,5 @@
 from data.data import Dataset
-from data.data import DataFactory
+from data.data_factory import DataFactory
 from data.protocol import SklearnProtocol
 
 

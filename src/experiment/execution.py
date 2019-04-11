@@ -1,5 +1,6 @@
 from experiment.model import ExperimentModel
-from data.data import Data, AugmentedData
+from data.data import Data
+from data.preprocessing import AugmentedData
 
 
 class Execution:
