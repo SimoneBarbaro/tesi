@@ -25,8 +25,8 @@ class ExperimentModel:
                                         validation_data=generator.flow(val_x, val_y, batch_size=batch_size),
                                         validation_steps=len(val_x) / batch_size)
 
-    def save(self, saver: ResultSaver):
-        self.model.save(saver.get_model_file())
+    def save(self, saver: ResultSaver, model_name: str):
+        self.model.save(saver.get_model_file() + "_" + model_name)
 
     def evaluate(self, x, y, batch_size):
         return self.model.evaluate(x, y, batch_size=batch_size)
