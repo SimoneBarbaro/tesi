@@ -48,8 +48,8 @@ class Experiment:
                         os.makedirs(log_dir)
                     self.callbacks[1] = keras.callbacks.TensorBoard(log_dir=log_dir)
                 execution.run(self.callbacks)  # returns a history
-                if self.result_saver.get_model_file() is not None:
-                    model.save(self.result_saver, str(self.state.get_state_number()) + "_" + str(f))
+                if self.result_saver.can_save_model():
+                    model.save(self.result_saver.get_model_file(str(self.state.get_state_number()) + "_" + str(f)))
                 f += 1
             dic = self.state.get_info().copy()
             for i, ev in enumerate(evals):

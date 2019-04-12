@@ -7,10 +7,11 @@ class ResultSaver:
     def __init__(self, run_name, result_dir=None, log_dir=None):
         if result_dir is None:
             self.__output_file = "stdout"
-            self.__model_file = None
+            self.__model_dir = None
         else:
             self.__output_file = os.path.join(result_dir, run_name + ".txt")
-            self.__model_file = os.path.join(result_dir, run_name + "_model.h5")
+            self.__model_dir = os.path.join(result_dir, "models", run_name)
+            os.makedirs(self.__model_dir, exist_ok=True)
         self.__log_dir = log_dir
 
     def write_to_output_file(self, result):
@@ -25,8 +26,11 @@ class ResultSaver:
     def get_log_dir(self):
         return self.__log_dir
 
-    def get_model_file(self):
-        return self.__model_file
+    def can_save_model(self):
+        return self.__model_dir is not None
+
+    def get_model_file(self, name):
+        return os.path.join(self.__model_dir, name + "_model.h5")
 
     def get_num_states_done(self):
         if os.path.isfile(self.__output_file):
