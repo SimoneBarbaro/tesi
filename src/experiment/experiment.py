@@ -38,38 +38,13 @@ class Experiment:
                     self.result_saver.get_model_file(run_name + Experiment.PRETRAINING_RUN_NAME)):
                 pre_state = self.state.get_pretraining_state()
                 self.run_state(run_name + Experiment.PRETRAINING_RUN_NAME, pre_state,
-                               save_output=False, save_log=False, fold_names=False)
+                               output_to_file=False, fold_names=False)
 
             self.run_state(run_name, self.state)
-            """
-            evals = [[] for _ in range(len(self.config.epochs))]
-            f = 0
-            for data in self.state.next_data():
-                model = self.state.create_model()
-                execution = Execution(model, data, self.state.batch_size, self.config.max_epochs)
-                self.callbacks[0] = CheckProgressCallback(self.config.epochs, evals, execution.evaluate)
-                if self.result_saver.get_log_dir() is not None:
-                    log_dir = os.path.join(self.result_saver.get_log_dir(),
-                                           str(self.state.get_state_number()) + "_" + str(f))
-                    if not os.path.exists(log_dir):
-                        os.makedirs(log_dir)
-                    self.callbacks[1] = keras.callbacks.TensorBoard(log_dir=log_dir)
-                execution.run(self.callbacks)  # returns a history
-                if self.result_saver.can_save_model():
-                    model.save(self.result_saver.get_model_file(str(self.state.get_state_number()) + "_" + str(f)))
-                f += 1
-            dic = self.state.get_info().copy()
-            for i, ev in enumerate(evals):
-                dic["epochs"] = self.config.epochs[i]
-                dic["result"] = merge_results(["loss"] + self.config.metrics, ev)
-                self.result_saver.write_to_output_file(dic)
-            """
             self.state = self.state.next()
 
-    def run_state(self, run_name, state: ExperimentState, save_output=True,
+    def run_state(self, run_name, state: ExperimentState, output_to_file=True,
                   save_log=True, save_model=True, fold_names=True):
-        if not save_output and not save_log and not save_model:
-            raise Exception("run would do nothing")
         config = state.config
         evals = [[] for _ in range(len(config.epochs))]
         f = 0
@@ -82,7 +57,7 @@ class Experiment:
             execution = Execution(model, data, state.batch_size, config.max_epochs)
 
             callbacks = []
-            if save_output:
+            if output_to_file:
                 callbacks.append(CheckProgressCallback(config.epochs, evals, execution.evaluate))
             if save_log and self.result_saver.get_log_dir() is not None:
                 log_dir = os.path.join(self.result_saver.get_log_dir(), save_name)
@@ -95,12 +70,14 @@ class Experiment:
                 model.save(self.result_saver.get_model_file(save_name), self.config.has_pretraining())
             f += 1
 
-        if save_output:
-            dic = state.get_info().copy()
-            for i, ev in enumerate(evals):
-                dic["epochs"] = config.epochs[i]
-                dic["result"] = merge_results(["loss"] + config.metrics, ev)
+        dic = state.get_info().copy()
+        for i, ev in enumerate(evals):
+            dic["epochs"] = config.epochs[i]
+            dic["result"] = merge_results(["loss"] + config.metrics, ev)
+            if output_to_file:
                 self.result_saver.write_to_output_file(dic)
+            else:
+                ResultSaver.write_to_stdout(dic)
 
 
 def merge_results(metrics, results):

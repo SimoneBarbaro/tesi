@@ -14,6 +14,10 @@ class ResultSaver:
             os.makedirs(self.__model_dir, exist_ok=True)
         self.__log_dir = log_dir
 
+    @staticmethod
+    def write_to_stdout(result):
+        sys.stdout.write(str(result) + "\n")
+
     def write_to_output_file(self, result):
         if self.__output_file != 'stdout':
             file = open(self.__output_file, 'a')
