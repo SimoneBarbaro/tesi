@@ -4,7 +4,7 @@
     "name": "resnet",
     "freeze": false,
     "pretraining": {
-      "dataset": "EILAT_data.mat",
+      "dataset": "RSMAS_data.mat",
       "batch_sizes": [16],
       "epochs": [50],
       "protocol_type": "full",
