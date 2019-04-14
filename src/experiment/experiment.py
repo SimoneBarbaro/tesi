@@ -50,15 +50,14 @@ class Experiment:
         f = 0
         for data in state.next_data():
             save_name = run_name + "_" + str(f) if fold_names else run_name
+            f += 1
             pre_model_file = None
             if config.has_pretraining():
                 pre_model_file = self.result_saver.get_model_file(run_name + Experiment.PRETRAINING_RUN_NAME)
             model = state.create_model(pre_model_file)
             execution = Execution(model, data, state.batch_size, config.max_epochs)
 
-            callbacks = []
-            if output_to_file:
-                callbacks.append(CheckProgressCallback(config.epochs, evals, execution.evaluate))
+            callbacks = [CheckProgressCallback(config.epochs, evals, execution.evaluate)]
             if save_log and self.result_saver.get_log_dir() is not None:
                 log_dir = os.path.join(self.result_saver.get_log_dir(), save_name)
                 os.makedirs(log_dir, exist_ok=True)
@@ -68,7 +67,6 @@ class Experiment:
 
             if save_model and self.result_saver.can_save_model():
                 model.save(self.result_saver.get_model_file(save_name), self.config.has_pretraining())
-            f += 1
 
         dic = state.get_info().copy()
         for i, ev in enumerate(evals):

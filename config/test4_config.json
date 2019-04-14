@@ -1,5 +1,5 @@
 {
-  "dataset": "RSMAS_data.mat",
+  "dataset": "EILAT_data.mat",
   "model": {
     "name": "test",
     "freeze": false,
