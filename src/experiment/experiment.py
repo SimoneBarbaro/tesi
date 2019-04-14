@@ -23,18 +23,25 @@ class CheckProgressCallback(keras.callbacks.Callback):
 
 class Experiment:
 
+    PRETRAINING_RUN_NAME = "_pretraining"
+
     def __init__(self, confing: Config, saver: ResultSaver):
         self.config = confing
         self.state = ExperimentState(self.config)
         self.state = self.state.init_state_number(saver.get_num_states_done() - 1)
         self.result_saver = saver
-        self.callbacks = []
-        self.callbacks.append(None)
-        if self.result_saver.get_log_dir() is not None:
-            self.callbacks.append(None)
 
     def resume(self):
         while self.state.is_valid_state():
+            run_name = str(self.state.get_state_number())
+            if self.config.has_pretraining() and not os.path.exists(
+                    self.result_saver.get_model_file(run_name + Experiment.PRETRAINING_RUN_NAME)):
+                pre_state = self.state.get_pretraining_state()
+                self.run_state(run_name + Experiment.PRETRAINING_RUN_NAME, pre_state,
+                               save_output=False, save_log=False, fold_names=False)
+
+            self.run_state(run_name, self.state)
+            """
             evals = [[] for _ in range(len(self.config.epochs))]
             f = 0
             for data in self.state.next_data():
@@ -56,7 +63,44 @@ class Experiment:
                 dic["epochs"] = self.config.epochs[i]
                 dic["result"] = merge_results(["loss"] + self.config.metrics, ev)
                 self.result_saver.write_to_output_file(dic)
+            """
             self.state = self.state.next()
+
+    def run_state(self, run_name, state: ExperimentState, save_output=True,
+                  save_log=True, save_model=True, fold_names=True):
+        if not save_output and not save_log and not save_model:
+            raise Exception("run would do nothing")
+        config = state.config
+        evals = [[] for _ in range(len(config.epochs))]
+        f = 0
+        for data in state.next_data():
+            save_name = run_name + "_" + str(f) if fold_names else run_name
+            pre_model_file = None
+            if config.has_pretraining():
+                pre_model_file = self.result_saver.get_model_file(run_name + Experiment.PRETRAINING_RUN_NAME)
+            model = state.create_model(pre_model_file)
+            execution = Execution(model, data, state.batch_size, config.max_epochs)
+
+            callbacks = []
+            if save_output:
+                callbacks.append(CheckProgressCallback(config.epochs, evals, execution.evaluate))
+            if save_log and self.result_saver.get_log_dir() is not None:
+                log_dir = os.path.join(self.result_saver.get_log_dir(), save_name)
+                os.makedirs(log_dir, exist_ok=True)
+                callbacks.append(keras.callbacks.TensorBoard(log_dir=log_dir))
+
+            execution.run(callbacks)  # returns a history
+
+            if save_model and self.result_saver.can_save_model():
+                model.save(self.result_saver.get_model_file(save_name), self.config.has_pretraining())
+            f += 1
+
+        if save_output:
+            dic = state.get_info().copy()
+            for i, ev in enumerate(evals):
+                dic["epochs"] = config.epochs[i]
+                dic["result"] = merge_results(["loss"] + config.metrics, ev)
+                self.result_saver.write_to_output_file(dic)
 
 
 def merge_results(metrics, results):

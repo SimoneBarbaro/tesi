@@ -19,10 +19,24 @@ class Config:
         self.data_factory = DataFactory(self.dataset)
         self.model_name = confing_data["model"]["name"]
         self.freeze_model = confing_data["model"]["freeze"]
-        self.model_pretraining = confing_data["model"]["pretraining"]
+        self.model_pretraining = confing_data["model"].get("pretraining", None)
         self.batch_sizes = confing_data["batch_sizes"]
         self.epochs = confing_data["epochs"]
         self.max_epochs = max(self.epochs)
         self.metrics = confing_data["metrics"]
         self.preprocessing = confing_data.get("preprocessing", [None])
         self.augmentation = confing_data.get("augmentation", [None])
+
+    def has_pretraining(self):
+        return isinstance(self.model_pretraining, dict)
+
+    def fill_pretraining_data(self, data):
+        if self.has_pretraining():
+            data["dataset"] = self.model_pretraining["dataset"]
+            data["protocol_type"] = self.model_pretraining.get("protocol_type", "full")
+            data["model"] = {"name": self.model_name, "freeze": self.freeze_model,
+                             "pretraining": self.model_pretraining.get("pretraining", None)
+                             }
+            data["batch_sizes"] = self.model_pretraining["batch_sizes"]
+            data["epochs"] = self.model_pretraining["epochs"]
+            data["metrics"] = self.metrics

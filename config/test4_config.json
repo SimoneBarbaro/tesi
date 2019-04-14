@@ -1,0 +1,18 @@
+{
+  "dataset": "RSMAS_data.mat",
+  "model": {
+    "name": "test",
+    "freeze": false,
+    "pretraining": {
+      "dataset": "EILAT_data.mat",
+      "batch_sizes": [64],
+      "epochs": [3],
+      "protocol_type": "full"
+    }
+  },
+  "batch_sizes": [64],
+  "epochs": [3],
+  "metrics": ["accuracy"],
+  "preprocessing": [null, "hsv"],
+  "augmentation": [null]
+}

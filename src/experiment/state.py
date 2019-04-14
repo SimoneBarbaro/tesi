@@ -81,7 +81,6 @@ class ExperimentState(StateDecorator):
                                                                    state=BlankState(config.batch_sizes, "batch_size"))
                                               if state is None
                                               else state)
-        # self._init_state_number(state_number)
         self.config = config
         self.preprocessing = self.get_info()["preprocessing"]
         self.augmentation = self.get_info()["augmentation"]
@@ -97,30 +96,25 @@ class ExperimentState(StateDecorator):
                                                              augmentation=self.augmentation)
             yield self._data
 
-    def create_model(self):
+    def create_model(self, pretraining_file=None):
+        pretraining = self.config.model_pretraining
+        if self.config.has_pretraining():
+            if pretraining_file is None:
+                raise Exception("missing pretraining")
+            else:
+                pretraining = pretraining_file
         return ModelFactory.create_model(self.config.model_name, self._data.input_shape,
                                          self._data.num_classes, self.config.metrics,
-                                         self.config.freeze_model, self.config.model_pretraining)
+                                         self.config.freeze_model, pretraining)
 
     def _create_next(self, next_state, next_inner_state):
         return ExperimentState(self.config, next_state, next_inner_state)
 
-
-"""
-class CVState(ExperimentState):
-    def __init__(self, config: Config, state_number=0, state: BlankState = None, random_state=1):
-        super(CVState, self).__init__(config, state_number, state)
-        self.random_state = random_state
-        self.kfold = KFold(config.num_folds, True, self.random_state)
-
-    def next_data(self):
-        for train_index, test_index, in self.kfold.split(range(self.config.dataset.dim1)):
-            self._data = self.config.data_factory.build_data(train_index=train_index,
-                                                             test_index=test_index,
-                                                             preprocessing=self.preprocessing,
-                                                             augmentation=self.augmentation)
-            yield self._data
-
-    def _create_next(self, next_state, next_inner_state):
-        return CVState(self.config, next_state, next_inner_state, self.random_state)
-"""
+    def get_pretraining_state(self):
+        if not self.config.has_pretraining():
+            return None
+        config_data = dict()
+        self.config.fill_pretraining_data(config_data)
+        config_data["preprocessing"] = [self.preprocessing]
+        config_data["augmentation"] = [self.augmentation]
+        return ExperimentState(Config(config_data))
