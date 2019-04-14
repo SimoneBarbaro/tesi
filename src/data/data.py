@@ -24,20 +24,31 @@ class Data:
         self.testing_x = np.array(self.testing_x)
         self.testing_y = np.array(self.testing_y)
 
-    # TODO dataset fold should be changed
-    def _split_train_test(self, dataset, fold):
-        for i in dataset.folds[fold][0:dataset.dim1]:
+
+class FullData(Data):
+    def __init__(self, dataset: Dataset, train_index, val_index):
+        super(FullData, self).__init__(dataset)
+        for i in dataset.data_indexes[0:dataset.test_data_len]:
             self.training_x.append(dataset.imgs[i - 1])
             self.training_y.append(dataset.labels[i - 1])
-        for i in dataset.folds[fold][dataset.dim1:dataset.dim2]:
-            self.testing_x.append(dataset.imgs[i - 1])
-            self.testing_y.append(dataset.labels[i - 1])
+        self._wrap_data()
+        self.validation_x = self.training_x[val_index]
+        self.validation_y = self.training_y[val_index]
+        self.training_x = self.training_x[train_index]
+        self.training_y = self.training_y[train_index]
+        self.testing_x = self.validation_x
+        self.testing_y = self.validation_y
 
 
 class CVData(Data):
     def __init__(self, dataset: Dataset, train_index, val_index):
         super(CVData, self).__init__(dataset)
-        self._split_train_test(dataset, 0)
+        for i in dataset.data_indexes[0:dataset.training_date_len]:
+            self.training_x.append(dataset.imgs[i - 1])
+            self.training_y.append(dataset.labels[i - 1])
+        for i in dataset.data_indexes[dataset.training_date_len:dataset.test_data_len]:
+            self.testing_x.append(dataset.imgs[i - 1])
+            self.testing_y.append(dataset.labels[i - 1])
         self._wrap_data()
         self.validation_x = self.training_x[val_index]
         self.validation_y = self.training_y[val_index]

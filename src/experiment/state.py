@@ -92,6 +92,7 @@ class ExperimentState(StateDecorator):
         for train_index, test_index in self.config.protocol.folds:
 
             self._data = self.config.data_factory.build_data(train_index, test_index,
+                                                             protocol_type=self.config.protocol_type,
                                                              preprocessing=self.preprocessing,
                                                              augmentation=self.augmentation)
             yield self._data

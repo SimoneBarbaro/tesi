@@ -1,4 +1,4 @@
-from data.data import CVData
+from data.data import CVData, FullData
 from data.preprocessing import *
 
 
@@ -6,8 +6,14 @@ class DataFactory:
     def __init__(self, dataset: Dataset):
         self.dataset = dataset
 
-    def build_data(self, train_index, test_index, preprocessing=None, augmentation=None, **preprocessing_args):
-        result = CVData(self.dataset, train_index, test_index)
+    def build_data(self, train_index, test_index, protocol_type="kfold",
+                   preprocessing=None, augmentation=None, **preprocessing_args):
+        if protocol_type == "kfold":
+            result = CVData(self.dataset, train_index, test_index)
+        elif protocol_type == "full":
+            result = FullData(self.dataset, train_index, test_index)
+        else:
+            raise NotImplementedError("protocol type not implemented or not valid")
         if preprocessing == "padding":
             result = PaddedData(self.dataset, result, preprocessing_args.get("num_tiles", 1))
         elif preprocessing == "tiling":
