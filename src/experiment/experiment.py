@@ -28,7 +28,7 @@ class Experiment:
     def __init__(self, confing: Config, saver: ResultSaver):
         self.config = confing
         self.state = ExperimentState(self.config)
-        self.state = self.state.init_state_number(saver.get_num_states_done() - 1)
+        self.state = self.state.init_state_number((saver.get_num_states_done() - 1) // len(self.config.epochs))
         self.result_saver = saver
 
     def resume(self):
