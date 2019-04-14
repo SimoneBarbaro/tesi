@@ -1,0 +1,13 @@
+{
+  "dataset": "RSMAS_data.mat",
+  "model": {
+    "name": "resnet",
+    "freeze": false,
+    "pretraining": "imagenet"
+  },
+  "batch_sizes": [32],
+  "epochs": [50],
+  "metrics": ["accuracy"],
+  "preprocessing": [null],
+  "augmentation": [null]
+}
