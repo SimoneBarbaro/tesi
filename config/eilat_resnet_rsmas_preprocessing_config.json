@@ -1,0 +1,19 @@
+{
+  "dataset": "EILAT_data.mat",
+  "model": {
+    "name": "resnet",
+    "freeze": false,
+    "pretraining": {
+      "dataset": "EILAT_data.mat",
+      "batch_sizes": [16],
+      "epochs": [50],
+      "protocol_type": "full",
+      "pretraining": "imagenet"
+    }
+  },
+  "batch_sizes": [64],
+  "epochs": [30],
+  "metrics": ["accuracy"],
+  "preprocessing": [null, "hsv", "rgb_lbp", "wavelet"],
+  "augmentation": [null]
+}
