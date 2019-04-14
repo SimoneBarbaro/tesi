@@ -44,4 +44,4 @@ class FullProtocol(Protocol):
 
     @property
     def folds(self):
-        return [(range(self.__len_data), range(self.__len_test_data))]
+        return [(range(self.__len_data), range(self.__len_data, self.__len_test_data))]
