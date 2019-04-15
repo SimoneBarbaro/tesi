@@ -104,6 +104,10 @@ class SavedModel(CompletedModel):
 class ModelFactory:
 
     @staticmethod
+    def load_model(file: str, metrics):
+        return ExperimentModel(keras.models.load_model(file), metrics)
+
+    @staticmethod
     def create_model(name, input_shape, num_classes, metrics, freeze=True, pretraining="imagenet"):
         if isinstance(pretraining, str) and pretraining.endswith(".h5"):
             return SavedModel(input_shape, num_classes, metrics, pretraining=pretraining, freeze=freeze)

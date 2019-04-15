@@ -96,6 +96,9 @@ class ExperimentState(StateDecorator):
                                                              augmentation=self.augmentation)
             yield self._data
 
+    def load_model(self, file: str):
+        return ModelFactory.load_model(file, self.config.metrics)
+
     def create_model(self, pretraining_file=None):
         pretraining = self.config.model_pretraining
         if self.config.has_pretraining():
