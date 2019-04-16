@@ -95,6 +95,25 @@ class WaveletData(ChangedImagesData):
         return cv2.merge([b1, g1, r1])
 
 
+class FullWaveletData(ChangedImagesData):
+
+    @staticmethod
+    def __make_grey_wavelet(image):
+        approximation, (LH, HL, HH) = pywt.dwt2(image, "db1")
+        r1 = np.concatenate((approximation, LH), axis=0)
+        r2 = np.concatenate((HL, HH), axis=0)
+        result = np.concatenate((r1, r2), axis=1)
+        return result
+
+    def _change_image(self, image):
+        b, g, r = cv2.split(image)
+        b1 = FullWaveletData.__make_grey_wavelet(b)
+        g1 = FullWaveletData.__make_grey_wavelet(g)
+        r1 = FullWaveletData.__make_grey_wavelet(r)
+
+        return cv2.merge([b1, g1, r1])
+
+
 class AugmentedData(PreprocessedData):
     def __init__(self, dataset: Dataset, data: Data, generator: ImageDataGenerator):
         super(AugmentedData, self).__init__(dataset, data)

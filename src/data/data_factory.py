@@ -24,6 +24,8 @@ class DataFactory:
             result = RgbLBPData(self.dataset, result)  # TODO parameters
         elif preprocessing == "wavelet":
             result = WaveletData(self.dataset, result)
+        elif preprocessing == "full_wavelet":
+            result = FullWaveletData(self.dataset, result)
         if augmentation is not None:
             builder = DataAugmentationBuilder()
             for aug in augmentation:
