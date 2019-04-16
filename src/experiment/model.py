@@ -34,6 +34,15 @@ class ExperimentModel:
         return self.model.evaluate(x, y, batch_size=batch_size)
 
 
+class TestModel(ExperimentModel):
+    def __init__(self, input_shape, num_classes, metrics):
+        super(TestModel, self).__init__(keras.Sequential([keras.layers.Flatten(input_shape=input_shape),
+                                                          keras.layers.Dense(64, activation='relu'),
+                                                          keras.layers.Dense(num_classes, activation='softmax')
+                                                          ]),
+                                        metrics)
+
+
 class CompletedModel(ExperimentModel):
     def __init__(self, model: keras.Model, input_shape, num_classes, metrics, freeze: bool):
         self.__inner_model = model
@@ -67,12 +76,13 @@ class CompletedModel(ExperimentModel):
         return keras.Model(inputs=inp, outputs=out, name=model.name + ('_frozen' if freeze else ''))
 
 
-class TestModel(CompletedModel):
+class ConvolutionalTestModel(CompletedModel):
     def __init__(self, input_shape, num_classes, metrics):
-        super(TestModel, self).__init__(keras.Sequential([keras.layers.Conv2D(1, 32, input_shape=(None, None, 3)),
-                                                          keras.layers.MaxPooling2D(pool_size=(20, 20)),
-                                                          ]),
-                                        input_shape, num_classes, metrics, False)
+        super(ConvolutionalTestModel, self).__init__(
+            keras.Sequential([keras.layers.Conv2D(1, 32, input_shape=(None, None, 3)),
+                              keras.layers.MaxPooling2D(pool_size=(20, 20)),
+                              ]),
+            input_shape, num_classes, metrics, False)
 
 
 class Resnet50(CompletedModel):
@@ -117,4 +127,6 @@ class ModelFactory:
             return Densenet121(input_shape, num_classes, metrics, pretraining=pretraining, freeze=freeze)
         elif name == "test":
             return TestModel(input_shape, num_classes, metrics)
+        elif name == "convolutional_test":
+            return ConvolutionalTestModel(input_shape, num_classes, metrics)
         return None

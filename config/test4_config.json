@@ -1,7 +1,7 @@
 {
   "dataset": "EILAT_data.mat",
   "model": {
-    "name": "test",
+    "name": "convolutional_test",
     "freeze": false,
     "pretraining": {
       "dataset": "EILAT_data.mat",
