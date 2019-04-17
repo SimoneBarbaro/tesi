@@ -104,7 +104,7 @@ class Densenet121(CompletedModel):
 class SavedModel(CompletedModel):
     def __init__(self, input_shape, num_classes, metrics, pretraining, freeze=False):
         model = keras.models.load_model(pretraining)
-        "Removing final layers"
+        # Removing final layers
         model.layers.pop()
         model.layers.pop()
         model.layers.pop()
