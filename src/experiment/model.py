@@ -32,7 +32,7 @@ class ExperimentModel:
         self.model.save_weights(file)
 
     def load(self, file: str):
-        self.model.load(file)
+        self.model.load_weights(file)
 
     def evaluate(self, x, y, batch_size):
         return self.model.evaluate(x, y, batch_size=batch_size)
