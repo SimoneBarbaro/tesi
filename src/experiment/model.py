@@ -28,7 +28,11 @@ class ExperimentModel:
     def save(self, file: str, only_inner=False):
         if only_inner:
             raise NotImplementedError
-        self.model.save(file)
+        # self.model.save(file)
+        self.model.save_weights(file)
+
+    def load(self, file: str):
+        self.model.load(file)
 
     def evaluate(self, x, y, batch_size):
         return self.model.evaluate(x, y, batch_size=batch_size)
@@ -112,11 +116,12 @@ class SavedModel(CompletedModel):
 
 
 class ModelFactory:
-
+    """
     @staticmethod
     def load_model(file: str, metrics):
-        return ExperimentModel(keras.models.load_model(file), metrics)
 
+        # return ExperimentModel(keras.models.load_model(file), metrics)
+    """
     @staticmethod
     def create_model(name, input_shape, num_classes, metrics, freeze=True, pretraining="imagenet"):
         if isinstance(pretraining, str) and pretraining.endswith(".h5"):

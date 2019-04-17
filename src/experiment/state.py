@@ -97,7 +97,10 @@ class ExperimentState(StateDecorator):
             yield self._data
 
     def load_model(self, file: str):
-        return ModelFactory.load_model(file, self.config.metrics)
+        model = self.create_model()
+        model.load(file)
+        return model
+        # return ModelFactory.load_model(file, self.config.metrics)
 
     def create_model(self, pretraining_file=None):
         pretraining = self.config.model_pretraining
