@@ -6,8 +6,8 @@ class DataFactory:
     def __init__(self, dataset: Dataset):
         self.dataset = dataset
 
-    def build_data(self, train_index, test_index, protocol_type="kfold",
-                   preprocessing=None, augmentation=None, **preprocessing_args):
+    def build_data(self, train_index, test_index, batch_size=None, protocol_type="kfold",
+                   preprocessing=None, augmentation=None, preprocessing_args=None):
         if protocol_type == "kfold":
             result = CVData(self.dataset, train_index, test_index)
         elif protocol_type == "full":
@@ -45,5 +45,7 @@ class DataFactory:
                     builder.set_fill()
                 elif aug == "rescale":
                     builder.set_rescale()
+                elif aug == "sub_tiling":
+                    return SubTiledData(self.dataset, result, batch_size, preprocessing_args.get("tile_size", 32))
             result = AugmentedData(self.dataset, result, builder.build())
         return result

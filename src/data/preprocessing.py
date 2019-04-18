@@ -1,7 +1,10 @@
+import random
+
 from data.dataset import Dataset
 from data.data import Data
 import matplotlib
 import numpy as np
+from tensorflow import keras
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import cv2
 import pywt
@@ -115,12 +118,41 @@ class FullWaveletData(ChangedImagesData):
 
 
 class AugmentedData(PreprocessedData):
-    def __init__(self, dataset: Dataset, data: Data, generator: ImageDataGenerator):
+    def __init__(self, dataset: Dataset, data: Data, generator):
         super(AugmentedData, self).__init__(dataset, data)
         self.generator = generator
 
-    def get_generator(self) -> ImageDataGenerator:
+    def get_generator(self):
         return self.generator
+
+
+class TileGenerator(keras.utils.Sequence):
+    def __init__(self, input_shape, batch_size, data_lenght, tile_size):
+        self.__len = data_lenght // batch_size
+        self.__tile_size = tile_size
+        self.__img_shape = [input_shape[0], input_shape[1]]
+        self.__i = 0
+        self.__offsets = []
+        for i in range(self.__len):
+            self.__offsets.append((random.randint(0, self.__img_shape[0] - tile_size),
+                                   random.randint(0, self.__img_shape[1] - tile_size)))
+            pass
+
+    def __len__(self):
+        return self.__len
+
+    def __getitem__(self, item):
+        result = item[self.__offsets[1] * self.__i:self.__offsets[1] * self.__i + self.__tile_size,
+                      self.__offsets[0] * self.__i:self.__offsets[0] * self.__i + self.__tile_size]
+        self.__i = self.__i + 1
+        return result
+
+
+class SubTiledData(AugmentedData):
+
+    def __init__(self, dataset: Dataset, data: Data, batch_size, tile_size=32):
+        super(SubTiledData, self).__init__(dataset, data,
+                                           TileGenerator(data.input_shape, batch_size, len(data.training_x), tile_size))
 
 
 class DataAugmentationBuilder:
