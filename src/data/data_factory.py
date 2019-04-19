@@ -46,7 +46,7 @@ class DataFactory:
                     builder.set_fill()
                 elif aug == "rescale":
                     builder.set_rescale()
-                elif aug == "sub_tiling":
+                elif aug == "tiling":
                     return SubTiledData(self.dataset, result, batch_size, augmentation_args.get("tile_size", 32))
             result = AugmentedData(self.dataset, result, builder.build())
         return result

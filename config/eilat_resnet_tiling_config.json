@@ -1,0 +1,32 @@
+{
+  "dataset": "EILAT_data.mat",
+  "model": {
+    "name": "resnet",
+    "freeze": false,
+    "pretraining": "imagenet"
+  },
+  "batch_sizes": [64],
+  "epochs": [30],
+  "metrics": ["accuracy"],
+  "preprocessing": [null, "hsv"],
+  "augmentation": [
+    {
+      "name": "tiling",
+      "args": {
+        "tile_size": 32
+      }
+    },
+    {
+      "name": "tiling",
+      "args": {
+        "tile_size": 16
+      }
+    },
+    {
+      "name": "tiling",
+      "args": {
+        "tile_size": 8
+      }
+    }
+  ]
+}

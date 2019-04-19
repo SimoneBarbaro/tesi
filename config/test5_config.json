@@ -34,7 +34,7 @@
   "augmentation": [
     null,
     {
-      "name": "sub_tiling",
+      "name": "tiling",
       "args": {
         "tile_size": 16
       }
