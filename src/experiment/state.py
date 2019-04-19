@@ -24,11 +24,6 @@ class BlankState:
     def get_state_number(self):
         return self._state_number
 
-    def _get_inner_state_number(self, info):
-        if self._info_name == info:
-            return self._state_number
-        raise Exception("No state number associated with " + info)
-
     def is_valid_state(self):
         return self._state_number < len(self._state_info)
 
@@ -58,11 +53,6 @@ class StateDecorator(BlankState):
     def get_state_number(self):
         return self.__inner_state.get_state_number() + \
                self.__inner_state.num_states() * super(StateDecorator, self).get_state_number()
-
-    def _get_inner_state_number(self, info):
-        if self._info_name == info:
-            return super(StateDecorator, self)._get_inner_state_number(info)
-        return self.__inner_state._get_inner_state_number(info)
 
     def is_valid_state(self):
         return self.__inner_state.is_valid_state() and super(StateDecorator, self).is_valid_state()
@@ -114,24 +104,12 @@ class ExperimentState(StateDecorator):
                                                              augmentation=self.augmentation,
                                                              preprocessing_args=self.preprocessing_args,
                                                              augmentation_args=self.augmentation_args)
-            """
-            self._data = self.config.data_factory.build_data(train_index, test_index,
-                                                             batch_size=self.batch_size,
-                                                             protocol_type=self.config.protocol_type,
-                                                             preprocessing=self.preprocessing,
-                                                             augmentation=self.augmentation,
-                                                             preprocessing_args=self.config.preprocessing_args[
-                                                                 self._get_inner_state_number("preprocessing")],
-                                                             augmentation_args=self.config.augmentation_args[
-                                                                 self._get_inner_state_number("augmentation")])
-            """
             yield self._data
 
     def load_model(self, file: str):
         model = self.create_model()
         model.load(file)
         return model
-        # return ModelFactory.load_model(file, self.config.metrics)
 
     def create_model(self, pretraining_file=None):
         pretraining = self.config.model_pretraining
