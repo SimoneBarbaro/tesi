@@ -13,12 +13,6 @@
     {
       "name": "tiling",
       "args": {
-        "tile_size": 64
-      }
-    },
-    {
-      "name": "tiling",
-      "args": {
         "tile_size": 32
       }
     },
@@ -26,6 +20,12 @@
       "name": "tiling",
       "args": {
         "tile_size": 16
+      }
+    },
+    {
+      "name": "tiling",
+      "args": {
+        "tile_size": 8
       }
     }
   ]
