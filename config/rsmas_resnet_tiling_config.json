@@ -8,7 +8,7 @@
   "batch_sizes": [32],
   "epochs": [50],
   "metrics": ["accuracy"],
-  "preprocessing": [null, "hsv"],
+  "preprocessing": [null],
   "augmentation": [
     {
       "name": "tiling",
