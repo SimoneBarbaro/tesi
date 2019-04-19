@@ -7,7 +7,7 @@ class DataFactory:
         self.dataset = dataset
 
     def build_data(self, train_index, test_index, batch_size=None, protocol_type="kfold",
-                   preprocessing=None, augmentation=None, preprocessing_args=None):
+                   preprocessing=None, augmentation=None, preprocessing_args=None, augmentation_args=None):
         if protocol_type == "kfold":
             result = CVData(self.dataset, train_index, test_index)
         elif protocol_type == "full":
@@ -21,7 +21,8 @@ class DataFactory:
         elif preprocessing == "hsv":
             result = HSVData(self.dataset, result)
         elif preprocessing == "rgb_lbp":
-            result = RgbLBPData(self.dataset, result)  # TODO parameters
+            result = RgbLBPData(self.dataset, result, preprocessing_args.get("lbp_points", 24),
+                                preprocessing_args.get("radius", 3))
         elif preprocessing == "wavelet":
             result = WaveletData(self.dataset, result)
         elif preprocessing == "full_wavelet":
@@ -46,6 +47,6 @@ class DataFactory:
                 elif aug == "rescale":
                     builder.set_rescale()
                 elif aug == "sub_tiling":
-                    return SubTiledData(self.dataset, result, batch_size, preprocessing_args.get("tile_size", 32))
+                    return SubTiledData(self.dataset, result, batch_size, augmentation_args.get("tile_size", 32))
             result = AugmentedData(self.dataset, result, builder.build())
         return result

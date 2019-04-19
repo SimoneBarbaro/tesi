@@ -1,0 +1,43 @@
+{
+  "dataset": "EILAT_data.mat",
+  "model": {
+    "name": "test",
+    "freeze": false,
+    "pretraining": null
+  },
+  "batch_sizes": [
+    64
+  ],
+  "epochs": [
+    1
+  ],
+  "metrics": [
+    "accuracy"
+  ],
+  "preprocessing": [
+    null,
+    {
+      "name": "tiling",
+      "args": {
+        "num_tiles": 2
+      }
+    },
+    "tiling",
+    {
+      "name": "rgb_lbp",
+      "args": {
+        "lbp_points": 16,
+        "radius": 2
+      }
+    }
+  ],
+  "augmentation": [
+    null,
+    {
+      "name": "sub_tiling",
+      "args": {
+        "tile_size": 16
+      }
+    }
+  ]
+}

@@ -27,6 +27,7 @@ class Config:
         self.preprocessing = confing_data.get("preprocessing", [None])
         self.augmentation = confing_data.get("augmentation", [None])
         self.preprocessing_args = confing_data.get("preprocessing_args", dict())
+        self.augmentation_args = confing_data.get("augmentation_args", dict())
 
     def has_pretraining(self):
         return isinstance(self.model_pretraining, dict)

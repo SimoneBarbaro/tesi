@@ -24,6 +24,11 @@ class BlankState:
     def get_state_number(self):
         return self._state_number
 
+    def _get_inner_state_number(self, info):
+        if self._info_name == info:
+            return self._state_number
+        raise Exception("No state number associated with " + info)
+
     def is_valid_state(self):
         return self._state_number < len(self._state_info)
 
@@ -54,6 +59,11 @@ class StateDecorator(BlankState):
         return self.__inner_state.get_state_number() + \
                self.__inner_state.num_states() * super(StateDecorator, self).get_state_number()
 
+    def _get_inner_state_number(self, info):
+        if self._info_name == info:
+            return super(StateDecorator, self)._get_inner_state_number(info)
+        return self.__inner_state._get_inner_state_number(info)
+
     def is_valid_state(self):
         return self.__inner_state.is_valid_state() and super(StateDecorator, self).is_valid_state()
 
@@ -83,19 +93,38 @@ class ExperimentState(StateDecorator):
                                               else state)
         self.config = config
         self.preprocessing = self.get_info()["preprocessing"]
+        self.preprocessing_args = dict()
+        if isinstance(self.preprocessing, dict):
+            self.preprocessing_args = self.preprocessing["args"]
+            self.preprocessing = self.preprocessing["name"]
         self.augmentation = self.get_info()["augmentation"]
+        self.augmentation_args = dict()
+        if isinstance(self.augmentation, dict):
+            self.augmentation_args = self.augmentation["args"]
+            self.augmentation = self.augmentation["name"]
         self.batch_size = self.get_info()["batch_size"]
         self._data = None
 
     def next_data(self):
         for train_index, test_index in self.config.protocol.folds:
-
             self._data = self.config.data_factory.build_data(train_index, test_index,
                                                              batch_size=self.batch_size,
                                                              protocol_type=self.config.protocol_type,
                                                              preprocessing=self.preprocessing,
                                                              augmentation=self.augmentation,
-                                                             preprocessing_args=self.config.preprocessing_args)
+                                                             preprocessing_args=self.preprocessing_args,
+                                                             augmentation_args=self.augmentation_args)
+            """
+            self._data = self.config.data_factory.build_data(train_index, test_index,
+                                                             batch_size=self.batch_size,
+                                                             protocol_type=self.config.protocol_type,
+                                                             preprocessing=self.preprocessing,
+                                                             augmentation=self.augmentation,
+                                                             preprocessing_args=self.config.preprocessing_args[
+                                                                 self._get_inner_state_number("preprocessing")],
+                                                             augmentation_args=self.config.augmentation_args[
+                                                                 self._get_inner_state_number("augmentation")])
+            """
             yield self._data
 
     def load_model(self, file: str):
