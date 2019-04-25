@@ -1,0 +1,13 @@
+{
+  "dataset": "EILAT_data.mat",
+  "model": {
+    "name": "densenet",
+    "freeze": true,
+    "pretraining": "imagenet"
+  },
+  "batch_sizes": [64],
+  "epochs": [300],
+  "metrics": ["accuracy"],
+  "preprocessing": [null, "hsv", "rgb_lbp", "wavelet", "full_wavelet"],
+  "augmentation": [null]
+}

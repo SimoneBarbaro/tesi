@@ -1,0 +1,13 @@
+{
+  "dataset": "RSMAS_data.mat",
+  "model": {
+    "name": "densenet",
+    "freeze": true,
+    "pretraining": "imagenet"
+  },
+  "batch_sizes": [18],
+  "epochs": [700],
+  "metrics": ["accuracy"],
+  "preprocessing": [null, "hsv", "rgb_lbp", "wavelet", "full_wavelet"],
+  "augmentation": [null]
+}
