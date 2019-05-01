@@ -88,7 +88,7 @@ class CompletedModel(ExperimentModel):
         inp = keras.Input(input_shape)
         out = model(inp)
         # out = keras.layers.Flatten()(out)
-        out = keras.layers.GlobalAveragePooling2D()(out)
+        # out = keras.layers.GlobalAveragePooling2D()(out)
         out = keras.layers.Dense(512, activation='relu')(out)
         out = keras.layers.Dense(num_classes, activation='softmax')(out)
         return keras.Model(inputs=inp, outputs=out, name=model.name + ('_frozen' if freeze else ''))
@@ -107,6 +107,7 @@ class Resnet50(CompletedModel):
     def __init__(self, input_shape, num_classes, metrics, freeze=False, pretraining="imagenet"):
         super(Resnet50, self).__init__(keras.applications.ResNet50(weights=pretraining,
                                                                    include_top=False,
+                                                                   pooling="avg",
                                                                    input_shape=(None, None, 3)),
                                        input_shape, num_classes, metrics, freeze)
 
@@ -115,6 +116,7 @@ class Densenet121(CompletedModel):
     def __init__(self, input_shape, num_classes, metrics, freeze=False, pretraining="imagenet"):
         super(Densenet121, self).__init__(keras.applications.DenseNet121(weights=pretraining,
                                                                          include_top=False,
+                                                                         pooling="avg",
                                                                          input_shape=(None, None, 3)),
                                           input_shape, num_classes, metrics, freeze)
 
@@ -148,4 +150,5 @@ class ModelFactory:
             return TestModel(input_shape, num_classes, metrics)
         elif name == "convolutional_test":
             return ConvolutionalTestModel(input_shape, num_classes, metrics)
-        return None
+        else:
+            raise Exception("Model unknown")
