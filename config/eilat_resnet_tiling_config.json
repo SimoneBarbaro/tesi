@@ -8,7 +8,7 @@
   "batch_sizes": [64],
   "epochs": [30],
   "metrics": ["accuracy"],
-  "preprocessing": [null, "hsv"],
+  "preprocessing": [null, "rgb_lbp", "wavelet"],
   "augmentation": [
     {
       "name": "tiling",
