@@ -14,6 +14,7 @@ class ResultSaver:
             self.__model_dir = os.path.join(result_dir, "models", run_name)
             self.__confusion_dir = os.path.join(result_dir, "confusion_matrices", run_name)
             os.makedirs(self.__model_dir, exist_ok=True)
+            os.makedirs(self.__confusion_dir, exist_ok=True)
         self.__log_dir = log_dir
 
     @staticmethod
