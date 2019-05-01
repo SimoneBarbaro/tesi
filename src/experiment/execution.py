@@ -33,3 +33,8 @@ class Execution:
         return self.model.evaluate(self.data.validation_x,
                                    self.data.validation_y,
                                    self.batch_size)
+
+    def test(self):
+        return self.model.evaluate(self.data.testing_x,
+                                   self.data.testing_y,
+                                   self.batch_size)

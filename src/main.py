@@ -19,11 +19,14 @@ if __name__ == "__main__":
     if len(sys.argv) > 3:
         log_dir = sys.argv[3]
 
+    save_testing = False
+    if len(sys.argv) > 4:
+        save_testing = sys.argv[4]
+
     config_file = run_name + '_config.json'
     with open(os.path.join(os.path.dirname(__file__), os.pardir, 'config', config_file)) as f:
         config_data = json.load(f)
     config = Config(config_data)
 
     # config.protocol.save_folds("folds.mat")
-    Experiment(config, ResultSaver(run_name, res_dir, log_dir)).resume()
-
+    Experiment(config, ResultSaver(run_name, res_dir), save_testing=save_testing).resume()

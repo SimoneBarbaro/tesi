@@ -25,11 +25,12 @@ class Experiment:
 
     PRETRAINING_RUN_NAME = "_pretraining"
 
-    def __init__(self, confing: Config, saver: ResultSaver):
+    def __init__(self, confing: Config, saver: ResultSaver, save_testing=False):
         self.config = confing
         self.state = ExperimentState(self.config)
         self.state = self.state.init_state_number((saver.get_num_states_done() - 1) // len(self.config.epochs))
         self.result_saver = saver
+        self.save_testing = save_testing
 
     def resume(self):
         while self.state.is_valid_state():
@@ -40,13 +41,14 @@ class Experiment:
                 self.run_state(run_name + Experiment.PRETRAINING_RUN_NAME, pre_state,
                                save_output=False, fold_names=False)
 
-            self.run_state(run_name, self.state)
+            self.run_state(run_name, self.state, save_testing=self.save_testing)
             self.state = self.state.next()
 
     def run_state(self, run_name, state: ExperimentState, save_output=True,
-                  save_log=True, save_model=True, fold_names=True):
+                  save_log=True, save_model=True, fold_names=True, save_testing=False):
         config = state.config
         evals = [[] for _ in range(len(config.epochs))]
+        test_data = []
         f = 0
         for data in state.next_data():
             save_name = run_name + "_" + str(f) if fold_names else run_name
@@ -73,17 +75,28 @@ class Experiment:
                 if save_model and self.result_saver.can_save_model():
                     model.save(self.result_saver.get_model_file(save_name), self.config.has_pretraining())
                     model.save_confusion_matrix(data.validation_x, data.validation_y,
-                                                self.result_saver.get_confusion_file(save_name),
+                                                self.result_saver.get_confusion_file(save_name + "_validation"),
                                                 self.config.dataset.classes)
+                if save_testing:
+                    model.save_confusion_matrix(data.testing_x, data.testing_y,
+                                                self.result_saver.get_confusion_file(save_name + "_testing"),
+                                                self.config.dataset.classes)
+            test_data.append(execution.test())
 
         dic = state.get_info().copy()
         for i, ev in enumerate(evals):
             dic["epochs"] = config.epochs[i]
+            dic["data"] = "validation"
             dic["result"] = merge_results(["loss"] + config.metrics, ev)
             if save_output:
                 self.result_saver.write_to_output_file(dic)
-            # else:
-                # ResultSaver.write_to_stdout(dic)
+
+        dic = state.get_info().copy()
+        if save_testing:
+            dic["epochs"] = config.epochs[-1]
+            dic["data"] = "testing"
+            dic["result"] = merge_results(["loss"] + config.metrics, test_data)
+            self.result_saver.write_to_output_file(dic, test=True)
 
 
 def merge_results(metrics, results):
