@@ -72,6 +72,9 @@ class Experiment:
 
                 if save_model and self.result_saver.can_save_model():
                     model.save(self.result_saver.get_model_file(save_name), self.config.has_pretraining())
+                    model.save_confusion_matrix(data.validation_x, data.validation_y,
+                                                self.result_saver.get_confusion_file(save_name),
+                                                self.config.dataset.labels)
 
         dic = state.get_info().copy()
         for i, ev in enumerate(evals):

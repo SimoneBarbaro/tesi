@@ -9,6 +9,7 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import cv2
 import pywt
 from skimage.feature import local_binary_pattern
+from skimage import color
 
 
 class PreprocessedData(Data):
@@ -50,17 +51,28 @@ class TiledData(PreprocessedData):
         self.testing_x = np.tile(self.testing_x, (1, num_tiles, num_tiles, 1))
 
 
-class HSVData(PreprocessedData):
+class OtherColorSpaceData(PreprocessedData):
     def __init__(self, dataset: Dataset, data: Data):
-        super(HSVData, self).__init__(dataset, data)
-        self.training_x = self.__change_color(self.training_x)
-        self.validation_x = self.__change_color(self.validation_x)
-        self.testing_x = self.__change_color(self.testing_x)
+        super(OtherColorSpaceData, self).__init__(dataset, data)
+        self.training_x = self._change_color(self.training_x)
+        self.validation_x = self._change_color(self.validation_x)
+        self.testing_x = self._change_color(self.testing_x)
 
     @staticmethod
-    def __change_color(x):
-        result = np.array(list(map(lambda p: p / 255.0, x)))
-        return matplotlib.colors.rgb_to_hsv(result)
+    def _change_color(x):
+        raise NotImplementedError
+
+
+class HSVData(OtherColorSpaceData):
+    @staticmethod
+    def _change_color(x):
+        return color.rgb2hsv(x)
+
+
+class LABData(OtherColorSpaceData):
+    @staticmethod
+    def _change_color(x):
+        return color.rgb2lab(x)
 
 
 class ChangedImagesData(PreprocessedData):

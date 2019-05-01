@@ -20,6 +20,8 @@ class DataFactory:
             result = TiledData(self.dataset, result, preprocessing_args.get("num_tiles", 1))
         elif preprocessing == "hsv":
             result = HSVData(self.dataset, result)
+        elif preprocessing == "lab":
+            result = LABData(self.dataset, result)
         elif preprocessing == "rgb_lbp":
             result = RgbLBPData(self.dataset, result, preprocessing_args.get("lbp_points", 24),
                                 preprocessing_args.get("radius", 3))

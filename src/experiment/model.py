@@ -1,5 +1,9 @@
 from tensorflow import keras
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
+import sklearn
+import pandas as pd
+import seaborn as sn
+import matplotlib.pyplot as plt
 
 
 class ExperimentModel:
@@ -36,6 +40,15 @@ class ExperimentModel:
 
     def evaluate(self, x, y, batch_size):
         return self.model.evaluate(x, y, batch_size=batch_size)
+
+    def confusion_matrix(self, x, y, labels=None):
+        return sklearn.metrics.confusion_matrix(y, self.model.predict(x).argmax(1), labels=labels)
+
+    def save_confusion_matrix(self, x, y, file: str, labels=None):
+        m = self.confusion_matrix(x, y)
+        cm = pd.DataFrame(m, index=labels, columns=labels)
+        sn.heatmap(cm, annot=True)
+        plt.savefig(file)
 
 
 class TestModel(ExperimentModel):

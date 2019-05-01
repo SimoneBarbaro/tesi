@@ -33,6 +33,9 @@ class ResultSaver:
     def can_save_model(self):
         return self.__model_dir is not None
 
+    def get_confusion_file(self, name):
+        return os.path.join(self.__model_dir, name + "_confusion.png")
+
     def get_model_file(self, name):
         return os.path.join(self.__model_dir, name + "_model.h5")
 
