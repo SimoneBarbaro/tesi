@@ -6,7 +6,6 @@ from experiment.experiment import Experiment
 from experiment.result_saver import ResultSaver
 
 if __name__ == "__main__":
-    log_dir = None
     # start_state = 0
     if len(sys.argv) > 1:
         run_name = sys.argv[1]
@@ -16,12 +15,10 @@ if __name__ == "__main__":
         res_dir = sys.argv[2]
     else:
         res_dir = None
-    if len(sys.argv) > 3:
-        log_dir = sys.argv[3]
 
     save_testing = False
-    if len(sys.argv) > 4:
-        save_testing = sys.argv[4]
+    if len(sys.argv) > 3:
+        save_testing = sys.argv[3]
 
     config_file = run_name + '_config.json'
     with open(os.path.join(os.path.dirname(__file__), os.pardir, 'config', config_file)) as f:
