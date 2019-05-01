@@ -49,6 +49,7 @@ class ExperimentModel:
         cm = pd.DataFrame(m, index=labels, columns=labels)
         sn.heatmap(cm, annot=True)
         plt.savefig(file)
+        plt.clf()
 
 
 class TestModel(ExperimentModel):

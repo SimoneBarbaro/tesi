@@ -1,6 +1,7 @@
 import os
 import scipy.io
 from scipy import ndimage
+import numpy as np
 
 
 class Dataset:
@@ -18,6 +19,7 @@ class Dataset:
         self.training_date_len = data[0, 3][0][0]
         self.test_data_len = data[0, 4][0][0]
         img_paths = data[0, 5][0]
+        self.classes = np.array(list(map(lambda arr: arr[0], np.unique(img_paths))))
         img_names = data[0, 6][0]
         self.imgs = []
         for i, img_path in enumerate(img_paths):

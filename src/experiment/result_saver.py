@@ -8,9 +8,11 @@ class ResultSaver:
         if result_dir is None:
             self.__output_file = "stdout"
             self.__model_dir = None
+            self.__confusion_dir = None
         else:
             self.__output_file = os.path.join(result_dir, run_name + ".txt")
             self.__model_dir = os.path.join(result_dir, "models", run_name)
+            self.__confusion_dir = os.path.join(result_dir, "confusion_matrices", run_name)
             os.makedirs(self.__model_dir, exist_ok=True)
         self.__log_dir = log_dir
 
@@ -34,7 +36,7 @@ class ResultSaver:
         return self.__model_dir is not None
 
     def get_confusion_file(self, name):
-        return os.path.join(self.__model_dir, name + "_confusion.png")
+        return os.path.join(self.__confusion_dir, name + ".png")
 
     def get_model_file(self, name):
         return os.path.join(self.__model_dir, name + "_model.h5")

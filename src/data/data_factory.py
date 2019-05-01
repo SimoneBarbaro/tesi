@@ -29,7 +29,7 @@ class DataFactory:
             result = WaveletData(self.dataset, result)
         elif preprocessing == "full_wavelet":
             result = FullWaveletData(self.dataset, result)
-        else:
+        elif preprocessing is not None:
             raise Exception("Preprocessing unknown")
         if augmentation is not None:
             builder = DataAugmentationBuilder()
@@ -52,7 +52,7 @@ class DataFactory:
                     builder.set_rescale()
                 elif aug == "tiling":
                     return SubTiledData(self.dataset, result, batch_size, augmentation_args.get("tile_size", 32))
-                else:
+                elif aug is not None:
                     raise Exception("Augmentation unknown")
             result = AugmentedData(self.dataset, result, builder.build())
         return result
