@@ -1,6 +1,7 @@
 from tensorflow import keras
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import sklearn
+import numpy as np
 import pandas as pd
 import seaborn as sn
 import matplotlib.pyplot as plt
@@ -45,9 +46,26 @@ class ExperimentModel:
         return sklearn.metrics.confusion_matrix(y, self.model.predict(x).argmax(1))
 
     def save_confusion_matrix(self, x, y, file: str, labels=None):
+        def insert_totals(df_cm):
+            """ insert total column and line (the last ones) """
+            sum_col = []
+            for c in df_cm.columns:
+                sum_col.append(df_cm[c].sum())
+            sum_lin = []
+            for item_line in df_cm.iterrows():
+                sum_lin.append(item_line[1].sum())
+            df_cm['total'] = sum_lin
+            sum_col.append(np.sum(sum_lin))
+            df_cm.loc['total'] = sum_col
+
         m = self.confusion_matrix(x, y)
         cm = pd.DataFrame(m, index=labels, columns=labels)
-        sn.heatmap(cm, annot=True)
+        insert_totals(cm)
+        ax = sn.heatmap(cm, annot=True, fmt="d")
+        ax.set_title('Confusion matrix')
+        ax.set_xlabel("Predicted")
+        ax.set_ylabel("Actual")
+
         plt.savefig(file)
         plt.clf()
 
