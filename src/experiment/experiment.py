@@ -61,6 +61,7 @@ class Experiment:
                 model = state.load_model(self.result_saver.get_model_file(save_name))
                 execution = Execution(model, data, state.batch_size, config.max_epochs)
                 evals[-1].append(execution.evaluate())
+                confusion += np.array(model.confusion_matrix(data.validation_x, data.validation_y))
             else:
                 pre_model_file = None
                 if config.has_pretraining():
