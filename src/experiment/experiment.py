@@ -89,7 +89,8 @@ class Experiment:
             if save_output:
                 self.result_saver.write_to_output_file(dic)
 
-        self.save_confusion_matrix(confusion, self.result_saver.get_confusion_file(run_name))
+        if save_output:
+            self.save_confusion_matrix(confusion, self.result_saver.get_confusion_file(run_name))
 
         dic = state.get_info().copy()
         if save_testing:
