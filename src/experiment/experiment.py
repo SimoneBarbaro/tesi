@@ -85,7 +85,6 @@ class Experiment:
         dic = state.get_info().copy()
         for i, ev in enumerate(evals):
             dic["epochs"] = config.epochs[i]
-            dic["data"] = "validation"
             dic["result"] = merge_results(["loss"] + config.metrics, ev)
             if save_output:
                 self.result_saver.write_to_output_file(dic)
@@ -95,7 +94,6 @@ class Experiment:
         dic = state.get_info().copy()
         if save_testing:
             dic["epochs"] = config.epochs[-1]
-            dic["data"] = "testing"
             dic["result"] = merge_results(["loss"] + config.metrics, test_data)
             self.result_saver.write_to_output_file(dic, test=True)
 
