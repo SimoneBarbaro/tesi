@@ -31,7 +31,7 @@ class DataFactory:
             result = FullWaveletData(self.dataset, result)
         elif preprocessing is not None:
             raise Exception("Preprocessing unknown")
-        if augmentation is not None:
+        if augmentation is not None and isinstance(augmentation, list):
             builder = DataAugmentationBuilder()
             for aug in augmentation:
                 if aug == "feature_standardization":
@@ -50,9 +50,10 @@ class DataFactory:
                     builder.set_fill()
                 elif aug == "rescale":
                     builder.set_rescale()
-                elif aug == "tiling":
-                    return SubTiledData(self.dataset, result, batch_size, augmentation_args.get("tile_size", 32))
-                elif aug is not None:
-                    raise Exception("Augmentation unknown")
-            result = AugmentedData(self.dataset, result, builder.build())
+                result = AugmentedData(self.dataset, result, builder.build())
+        elif augmentation == "tiling":
+            result = SubTiledData(self.dataset, result, batch_size, augmentation_args.get("tile_size", 32))
+        elif augmentation is not None:
+            raise Exception("Augmentation unknown")
+
         return result
