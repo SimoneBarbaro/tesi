@@ -114,10 +114,7 @@ class ExperimentState(StateDecorator):
     def create_model(self, pretraining_file=None):
         pretraining = self.config.model_pretraining
         if self.config.has_pretraining():
-            if pretraining_file is None:
-                raise Exception("missing pretraining")
-            else:
-                pretraining = pretraining_file
+            pretraining = pretraining_file
         return ModelFactory.create_model(self.config.model_name, self._data.input_shape,
                                          self._data.num_classes, self.config.metrics,
                                          self.config.freeze_model, pretraining)
