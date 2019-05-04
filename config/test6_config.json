@@ -5,9 +5,9 @@
     "freeze": false,
     "pretraining": null
   },
-  "batch_sizes": [32, 64],
-  "epochs": [1, 2, 3],
+  "batch_sizes": [64],
+  "epochs": [1],
   "metrics": ["accuracy"],
-  "preprocessing": [null, "padding"],
-  "augmentation": [null, ["zoom", "rotation", "shift"]]
+  "preprocessing": [null],
+  "augmentation": [null]
 }
