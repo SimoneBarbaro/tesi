@@ -76,7 +76,7 @@ class Experiment:
                     callbacks.append(keras.callbacks.TensorBoard(log_dir=log_dir))
 
                 execution.run(callbacks)  # returns a history
-                confusion += np.array(model.confusion_matrix(data.validation_x, data.validation_y))
+                confusion += model.confusion_matrix(data.validation_x, data.validation_y, self.config.dataset.labels)
 
                 if save_model and self.result_saver.can_save_model():
                     model.save(self.result_saver.get_model_file(save_name), self.config.has_pretraining())

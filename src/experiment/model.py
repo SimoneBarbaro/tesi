@@ -38,8 +38,8 @@ class ExperimentModel:
     def evaluate(self, x, y, batch_size):
         return self.model.evaluate(x, y, batch_size=batch_size)
 
-    def confusion_matrix(self, x, y):
-        return sklearn.metrics.confusion_matrix(y, self.model.predict(x).argmax(1))
+    def confusion_matrix(self, x, y, labels):
+        return sklearn.metrics.confusion_matrix(y, self.model.predict(x).argmax(1), labels=labels)
 
 
 class TestModel(ExperimentModel):

@@ -10,15 +10,16 @@ class Dataset:
         mat = scipy.io.loadmat(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, mat_file))
         data = mat["data"]
         self.__directory = os.path.join(data[0, 0][0][0][0], data[0, 0][0][1][0])
-        self.labels = data[0, 1][0]
-        self.num_classes = max(self.labels)
-        for i in range(0, len(self.labels)):
-            self.labels[i] = self.labels[i] - 1
+        self.imgs_labels = data[0, 1][0]
+        self.num_classes = max(self.imgs_labels)
+        for i in range(0, len(self.imgs_labels)):
+            self.imgs_labels[i] = self.imgs_labels[i] - 1
         # TODO change folds
         self.__folds = data[0, 2]
         self.training_date_len = data[0, 3][0][0]
         self.test_data_len = data[0, 4][0][0]
         img_paths = data[0, 5][0]
+        self.labels = np.array(list(np.unique(self.imgs_labels)))
         self.classes = np.array(list(map(lambda arr: arr[0], np.unique(img_paths))))
         img_names = data[0, 6][0]
         self.imgs = []

@@ -30,7 +30,7 @@ class FullData(Data):
         super(FullData, self).__init__(dataset)
         for i in dataset.data_indexes[0:dataset.test_data_len]:
             self.training_x.append(dataset.imgs[i - 1])
-            self.training_y.append(dataset.labels[i - 1])
+            self.training_y.append(dataset.imgs_labels[i - 1])
         self._wrap_data()
         self.validation_x = self.training_x[val_index]
         self.validation_y = self.training_y[val_index]
@@ -45,10 +45,10 @@ class CVData(Data):
         super(CVData, self).__init__(dataset)
         for i in dataset.data_indexes[0:dataset.training_date_len]:
             self.training_x.append(dataset.imgs[i - 1])
-            self.training_y.append(dataset.labels[i - 1])
+            self.training_y.append(dataset.imgs_labels[i - 1])
         for i in dataset.data_indexes[dataset.training_date_len:dataset.test_data_len]:
             self.testing_x.append(dataset.imgs[i - 1])
-            self.testing_y.append(dataset.labels[i - 1])
+            self.testing_y.append(dataset.imgs_labels[i - 1])
         self._wrap_data()
         self.validation_x = self.training_x[val_index]
         self.validation_y = self.training_y[val_index]
