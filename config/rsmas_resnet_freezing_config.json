@@ -6,7 +6,7 @@
     "pretraining": "imagenet"
   },
   "batch_sizes": [18],
-  "epochs": [1300],
+  "epochs": [300],
   "metrics": ["accuracy"],
   "preprocessing": [null],
   "augmentation": [null]
