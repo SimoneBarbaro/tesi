@@ -1,7 +1,7 @@
 import os
 import scipy.io
-from scipy import ndimage
 import numpy as np
+import matplotlib
 
 
 class Dataset:
@@ -25,7 +25,8 @@ class Dataset:
         self.imgs = []
         for i, img_path in enumerate(img_paths):
             file_path = os.path.join(self.__directory, img_path[0], img_names[i][0])
-            image = ndimage.imread(file_path, mode="RGB")
+            # image = ndimage.imread(file_path, mode="RGB")
+            image = matplotlib.pyplot.imread(file_path)
             self.imgs.append(image)
         self.images_width = data[0, 7][0][0]
         self.input_shape = (self.images_width, self.images_width, 3)
