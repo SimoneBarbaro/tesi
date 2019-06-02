@@ -6,8 +6,9 @@ import sklearn
 class ExperimentModel:
     def __init__(self, model: keras.Model, metrics):
         self.model = model
+        self.f1 = "f1" in metrics
         self.model.compile(optimizer=keras.optimizers.SGD(lr=0.001, momentum=0.9, decay=0.000001, nesterov=True),
-                           loss='sparse_categorical_crossentropy', metrics=metrics)
+                           loss='sparse_categorical_crossentropy', metrics=["accuracy"])
         # self.model.summary()
 
     def fit(self, x, y, batch_size, epochs, callbacks, val_x, val_y):
@@ -36,10 +37,16 @@ class ExperimentModel:
         self.model.load_weights(file)
 
     def evaluate(self, x, y, batch_size):
-        return self.model.evaluate(x, y, batch_size=batch_size)
+        result = self.model.evaluate(x, y, batch_size=batch_size)
+        if self.f1:
+            result = result + [self.f1_score(x, y)]
+        return result
 
     def confusion_matrix(self, x, y, labels):
         return sklearn.metrics.confusion_matrix(y, self.model.predict(x).argmax(1), labels=labels)
+
+    def f1_score(self, x, y):
+        return sklearn.metrics.f1_score(y, self.model.predict(x).argmax(1), average='macro')
 
 
 class TestModel(ExperimentModel):

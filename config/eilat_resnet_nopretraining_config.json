@@ -7,7 +7,7 @@
   },
   "batch_sizes": [64],
   "epochs": [100],
-  "metrics": ["accuracy"],
+  "metrics": ["accuracy", "f1"],
   "preprocessing": [null],
   "augmentation": [null]
 }

@@ -13,7 +13,7 @@
   },
   "batch_sizes": [64],
   "epochs": [30],
-  "metrics": ["accuracy"],
+  "metrics": ["accuracy", "f1"],
   "preprocessing": [null, "hsv", "lab", "rgb_lbp", "wavelet", "full_wavelet"],
   "augmentation": [null]
 }
