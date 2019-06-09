@@ -5,14 +5,14 @@
     "freeze": false,
     "pretraining": {
       "dataset": "RSMAS_data.mat",
-      "batch_sizes": [16],
-      "epochs": [50],
+      "batch_sizes": [64],
+      "epochs": [30],
       "protocol_type": "full",
       "pretraining": "imagenet"
     }
   },
-  "batch_sizes": [64],
-  "epochs": [30],
+  "batch_sizes": [16],
+  "epochs": [50],
   "metrics": ["accuracy", "f1"],
   "preprocessing": [null, "hsv", "lab", "rgb_lbp", "wavelet", "full_wavelet"],
   "augmentation": [null]
