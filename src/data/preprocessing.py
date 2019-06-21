@@ -134,7 +134,6 @@ class TileGenerator(keras.utils.Sequence):
         for i in range(self.__len):
             self.__offsets.append((random.randint(0, self.__img_shape[0] - tile_size),
                                    random.randint(0, self.__img_shape[1] - tile_size)))
-            pass
 
     def __len__(self):
         return self.__len
