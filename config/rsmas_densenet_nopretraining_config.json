@@ -5,7 +5,7 @@
     "freeze": false,
     "pretraining": null
   },
-  "batch_sizes": [18],
+  "batch_sizes": [16],
   "epochs": [100],
   "metrics": ["accuracy", "f1"],
   "preprocessing": [null],
