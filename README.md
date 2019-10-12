@@ -6,3 +6,6 @@ src/main.py [config_name [res_dir [save_testing]]]
 config_name: name of the config file to be used in the run to specify preprocessing, model and hyperparameter search. There must be a file called config_name + "_config.json" in the folder config. These files are the configurations of the experiments for this thesis. If not specified it will be used a testing configuration.
 res_dir: directory where to store run results. These include confusion matrices, trained models, logs and validation performances. If not specified it will be used the standard output for printing validation performances and the rest of the data will not be saved.
 save_testing: if True, the models will be tested on the test set and the results will be stored in res_dir.
+
+## Dataset
+I used the EILAT and RSMAS datasets from (Shihavuddin, Asm. 2017. “Coral reef dataset”.Mendeley Data, v2.doi:10.17632/86y667257h.2).
